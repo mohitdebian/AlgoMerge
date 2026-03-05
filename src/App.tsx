@@ -75,17 +75,41 @@ const LogoutIcon = () => (
 
 const LandingPage = () => {
   const features = [
-    { title: 'Smart Scoring', desc: 'AI-powered merge probability analysis for every PR.', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
-    { title: 'Issue Discovery', desc: 'Surface the best issues to contribute to, fast.', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
-    { title: 'Repo Insights', desc: 'Real-time repository health and activity data.', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> },
-    { title: 'Competition Intel', desc: 'Know your odds before you write a line of code.', icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> },
+    {
+      title: 'Merge Probability Engine',
+      desc: 'Estimate merge success using PR state, repository behavior, and response patterns.',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    },
+    {
+      title: 'Issue Fit Discovery',
+      desc: 'Find issues that match your stack, urgency, and contributor bandwidth.',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    },
+    {
+      title: 'Live Repo Radar',
+      desc: 'Track contribution health, activity level, and opportunity across your watchlist.',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    },
+    {
+      title: 'Actionable Queue',
+      desc: 'Prioritize what to do next with a ranked queue built from your real contribution data.',
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    },
+  ];
+
+  const highlights = [
+    { label: 'Tracked Repositories', value: '120+' },
+    { label: 'Signals per PR', value: '14' },
+    { label: 'Avg Setup Time', value: '< 2m' },
   ];
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative overflow-hidden">
       {/* Dot grid background */}
       <div className="absolute inset-0 dot-grid dot-grid-fade pointer-events-none" />
       <div className="absolute inset-0 hero-glow pointer-events-none" />
+      <div className="absolute -top-40 -left-24 w-[28rem] h-[28rem] rounded-full bg-success/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-24 -right-20 w-[22rem] h-[22rem] rounded-full bg-white/8 blur-3xl pointer-events-none" />
 
       {/* Nav */}
       <nav className="relative flex items-center justify-between px-6 lg:px-8 py-4 border-b border-border/50">
@@ -103,75 +127,157 @@ const LandingPage = () => {
       </nav>
 
       {/* Hero */}
-      <div className="relative flex flex-col items-center justify-center px-6 pt-32 pb-24">
-        <div className="text-center max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border text-xs text-muted-foreground mb-8">
+      <section className="relative px-6 lg:px-8 pt-16 md:pt-24 pb-14 md:pb-20">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
+          <div className="xl:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border text-xs text-muted-foreground"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              Open source contribution intelligence
+              Built for open-source contributors
+            </motion.div>
+
+            <motion.h1
+              className="mt-5 text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.02]"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.05 }}
+            >
+              <span className="text-gradient">Ship Better PRs.</span>
+              <br />
+              <span className="text-foreground">Pick Smarter Issues.</span>
+            </motion.h1>
+
+            <motion.p
+              className="mt-5 text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.12 }}
+            >
+              AlgoMerge helps you decide what to contribute, when to contribute, and how to improve merge outcomes with focused data and AI guidance.
+            </motion.p>
+
+            <motion.div
+              className="mt-8 flex flex-wrap items-center gap-3"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.2 }}
+            >
+              <a
+                href="/api/auth/github"
+                className="v-btn-primary inline-flex items-center gap-2.5 px-6 py-3 rounded-lg text-sm font-semibold"
+              >
+                <GitHubIcon />
+                Continue with GitHub
+              </a>
+              <a
+                href="#features"
+                className="v-btn-secondary inline-flex items-center gap-2 text-sm py-3 px-5"
+              >
+                Explore Features
+              </a>
+            </motion.div>
+
+            <motion.div
+              className="mt-8 grid grid-cols-3 gap-px rounded-xl overflow-hidden border border-border/80 bg-border max-w-xl"
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.26 }}
+            >
+              {highlights.map((item) => (
+                <div key={item.label} className="bg-card px-4 py-3">
+                  <div className="text-lg md:text-xl font-semibold text-foreground tracking-tight">{item.value}</div>
+                  <div className="text-[10px] md:text-[11px] uppercase tracking-[0.14em] text-muted-foreground mt-1">{item.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          <motion.div
+            className="xl:col-span-5"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.18 }}
+          >
+            <div className="v-card p-5 md:p-6 bg-gradient-to-br from-[#161616] via-[#121212] to-[#0f0f0f]">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Live Snapshot</div>
+                  <div className="text-sm font-semibold text-foreground">Contribution Command Center</div>
+                </div>
+                <span className="text-[10px] px-2 py-1 rounded-md border border-success/30 text-success bg-success/10">Realtime</span>
+              </div>
+
+              <div className="space-y-3">
+                <div className="rounded-lg border border-border bg-[#0f0f0f] p-3">
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+                    <span>Merge efficiency</span>
+                    <span className="font-medium text-foreground">74%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-[#1a1a1a] overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full bg-success"
+                      initial={{ width: 0 }}
+                      animate={{ width: '74%' }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-lg border border-border bg-[#0f0f0f] p-3">
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Streak</div>
+                    <div className="text-xl font-semibold text-foreground">12d</div>
+                  </div>
+                  <div className="rounded-lg border border-border bg-[#0f0f0f] p-3">
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Open PRs</div>
+                    <div className="text-xl font-semibold text-foreground">8</div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border bg-[#0f0f0f] p-3">
+                  <div className="text-[11px] text-muted-foreground">Top Next Action</div>
+                  <div className="text-sm font-medium text-foreground mt-1">Review and update PR #38205 before peak maintainer hours.</div>
+                </div>
+              </div>
             </div>
           </motion.div>
+        </div>
+      </section>
 
-          <motion.h1
-            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-6"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <span className="text-gradient">Find your next<br />contribution</span>
-          </motion.h1>
-
-          <motion.p
-            className="text-base md:text-lg text-muted-foreground max-w-md mx-auto mb-10 leading-relaxed"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            AI-powered scoring. Smart issue discovery. Real&#8209;time repo insights. Know your merge odds before you start.
-          </motion.p>
-
+      {/* Feature Grid */}
+      <section id="features" className="relative px-6 lg:px-8 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-end justify-between gap-3 mb-5">
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">Everything You Need To Contribute Better</h2>
+            <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Core Capabilities</span>
+          </div>
           <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border rounded-xl overflow-hidden"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.28 }}
           >
-            <a
-              href="/api/auth/github"
-              className="v-btn-primary inline-flex items-center gap-2.5 px-6 py-3 rounded-lg text-sm font-medium"
-            >
-              <GitHubIcon />
-              Continue with GitHub
-            </a>
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                className="bg-card p-5 md:p-6 flex flex-col gap-3"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.34 + i * 0.06 }}
+                whileHover={{ backgroundColor: 'rgba(255,255,255,0.035)', y: -2 }}
+              >
+                <div className="text-muted-foreground">{f.icon}</div>
+                <h3 className="font-semibold text-sm text-foreground">{f.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
-
-        {/* Feature Grid */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px mt-24 max-w-4xl mx-auto w-full bg-border rounded-xl overflow-hidden"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-        >
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              className="bg-card p-6 flex flex-col gap-3 hover:bg-[#0f0f0f] transition-colors"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.5 + i * 0.08 }}
-              whileHover={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
-            >
-              <div className="text-muted-foreground">{f.icon}</div>
-              <h3 className="font-medium text-sm text-foreground">{f.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
+      </section>
 
       {/* Footer */}
       <div className="relative text-center py-12 border-t border-border/50">
