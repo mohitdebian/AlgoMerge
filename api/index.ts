@@ -1,4 +1,4 @@
-import { createApp } from '../src/server/app.ts';
+import { createApp } from '../src/server/app';
 
 const appPromise = createApp({ withVite: false });
 

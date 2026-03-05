@@ -1,11 +1,10 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import { createServer as createViteServer } from 'vite';
-import authRoutes from './routes/auth.routes.ts';
-import apiRoutes from './routes/api.routes.ts';
-import watchlistRoutes from './routes/watchlist.routes.ts';
-import userRoutes from './routes/user.routes.ts';
+import authRoutes from './routes/auth.routes';
+import apiRoutes from './routes/api.routes';
+import watchlistRoutes from './routes/watchlist.routes';
+import userRoutes from './routes/user.routes';
 
 export const createApp = async ({ withVite = false }: { withVite?: boolean } = {}) => {
   const app = express();
@@ -25,6 +24,7 @@ export const createApp = async ({ withVite = false }: { withVite?: boolean } = {
   app.use('/api/user', userRoutes);
 
   if (withVite) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
