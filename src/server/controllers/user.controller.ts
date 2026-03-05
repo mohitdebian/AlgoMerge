@@ -1,37 +1,15 @@
 import { Request, Response } from 'express';
-import { getOctokit, getUserProfile, checkRateLimit, handleRateLimitError } from '../services/github.service.js';
+import { getOctokit, checkRateLimit, handleRateLimitError } from '../services/github.service.js';
 import { calculateMergeProbability } from '../services/scoring.service.js';
 import { serverCache } from '../utils/cache.js';
 
-/**
- * Ensures req.session has both accessToken and user.
- * If the user object is missing (e.g. after server restart clears in-memory sessions),
- * re-fetches the user profile from GitHub using the existing access token.
- * Returns the username or null if not authenticated.
- */
-const getAuthenticatedUser = async (req: Request): Promise<{ username: string; accessToken: string } | null> => {
-  // @ts-ignore
-  const accessToken = req.session.accessToken;
-  if (!accessToken) return null;
-
-  // @ts-ignore
-  if (!req.session.user || !req.session.user.login) {
-    try {
-      const userProfile = await getUserProfile(accessToken);
-      // @ts-ignore
-      req.session.user = userProfile;
-    } catch (e) {
-      console.error('Failed to rehydrate user profile:', e);
-      return null;
-    }
-  }
-
-  // @ts-ignore
-  return { username: req.session.user.login, accessToken };
+const getAuthenticatedUser = (req: Request): { username: string; accessToken: string } | null => {
+  if (!req.user) return null;
+  return { username: req.user.username, accessToken: req.user.accessToken };
 };
 
 export const getMyPRs = async (req: Request, res: Response) => {
-  const auth = await getAuthenticatedUser(req);
+  const auth = getAuthenticatedUser(req);
   if (!auth) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
@@ -65,7 +43,7 @@ export const getMyPRs = async (req: Request, res: Response) => {
 };
 
 export const getMyIssues = async (req: Request, res: Response) => {
-  const auth = await getAuthenticatedUser(req);
+  const auth = getAuthenticatedUser(req);
   if (!auth) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
@@ -122,7 +100,7 @@ export const getMyIssues = async (req: Request, res: Response) => {
 };
 
 export const getDashboardStats = async (req: Request, res: Response) => {
-  const auth = await getAuthenticatedUser(req);
+  const auth = getAuthenticatedUser(req);
   if (!auth) {
     return res.status(401).json({ message: 'Not authenticated' });
   }

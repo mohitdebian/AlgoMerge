@@ -85,7 +85,7 @@ export async function apiFetch<T = any>(
   }
 
   // 3. Make the real fetch
-  const fetchPromise = fetch(url, options);
+  const fetchPromise = fetch(url, { credentials: 'include', ...options });
 
   // For dedup: store a clone promise so other callers can read independently
   if (isGet && cacheKey) {

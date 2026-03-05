@@ -4,50 +4,42 @@ import { getRepoInsights, getBatchRepoInsights } from '../services/watchlist.ser
 import { handleRateLimitError, checkRateLimit } from '../services/github.service.js';
 
 export const getWatchlist = (req: Request, res: Response) => {
-  // @ts-ignore
-  if (!req.session.user) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
-  // @ts-ignore
-  const watchlist = UserModel.getWatchlist(req.session.user.id.toString());
+  const watchlist = UserModel.getWatchlist(req.user.userId.toString());
   res.json(watchlist);
 };
 
 export const addToWatchlist = (req: Request, res: Response) => {
   const { repo } = req.body;
-  // @ts-ignore
-  if (!req.session.user || !repo) {
+  if (!req.user || !repo) {
     return res.status(400).json({ message: 'Missing user or repo' });
   }
 
-  // @ts-ignore
-  const updatedUser = UserModel.addToWatchlist(req.session.user.id.toString(), repo);
+  const updatedUser = UserModel.addToWatchlist(req.user.userId.toString(), repo);
   res.json(updatedUser.watchlist);
 };
 
 export const removeFromWatchlist = (req: Request, res: Response) => {
   const { repo } = req.body;
-  // @ts-ignore
-  if (!req.session.user || !repo) {
+  if (!req.user || !repo) {
     return res.status(400).json({ message: 'Missing user or repo' });
   }
 
-  // @ts-ignore
-  const updatedUser = UserModel.removeFromWatchlist(req.session.user.id.toString(), repo);
+  const updatedUser = UserModel.removeFromWatchlist(req.user.userId.toString(), repo);
   res.json(updatedUser?.watchlist || []);
 };
 
 export const fetchRepoInsights = async (req: Request, res: Response) => {
   const { owner, repo } = req.params;
-  // @ts-ignore
-  if (!req.session.accessToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
   try {
     checkRateLimit();
-    // @ts-ignore
-    const insights = await getRepoInsights(req.session.accessToken, `${owner}/${repo}`);
+    const insights = await getRepoInsights(req.user.accessToken, `${owner}/${repo}`);
     res.json(insights);
   } catch (error: any) {
     if (handleRateLimitError(error, res)) return;
@@ -61,8 +53,7 @@ export const fetchRepoInsights = async (req: Request, res: Response) => {
  * POST /api/watchlist/insights/batch { repos: ["owner/repo", ...] }
  */
 export const fetchBatchRepoInsights = async (req: Request, res: Response) => {
-  // @ts-ignore
-  if (!req.session.accessToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
@@ -76,8 +67,7 @@ export const fetchBatchRepoInsights = async (req: Request, res: Response) => {
 
   try {
     checkRateLimit();
-    // @ts-ignore
-    const insights = await getBatchRepoInsights(req.session.accessToken, reposToFetch);
+    const insights = await getBatchRepoInsights(req.user.accessToken, reposToFetch);
     res.json(insights);
   } catch (error: any) {
     if (handleRateLimitError(error, res)) return;

@@ -117,6 +117,7 @@ export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => 
                         isPR,
                     }),
                     signal: controller.signal,
+                    credentials: 'include',
                 });
 
                 if (controller.signal.aborted) return;
@@ -149,7 +150,8 @@ export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => 
             await fetch('/api/watchlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ repo: repoName })
+                body: JSON.stringify({ repo: repoName }),
+                credentials: 'include'
             });
             // Fallback for immediate UI updates / redundancy
             const localWatch = JSON.parse(localStorage.getItem('pr_radar_watchlist') || '[]');

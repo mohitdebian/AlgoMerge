@@ -74,7 +74,7 @@ export const Discover = ({
       const [owner, name] = repoToFetch.split('/');
       if (!owner || !name) throw new Error('Invalid repo format');
 
-      const response = await fetch(`/api/issues/${owner}/${name}?labels=${filterToFetch}`);
+      const response = await fetch(`/api/issues/${owner}/${name}?labels=${filterToFetch}`, { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setIssues(data);
@@ -96,7 +96,7 @@ export const Discover = ({
     }
 
     try {
-      const res = await fetch(`/api/repos/${owner}/${name}`);
+      const res = await fetch(`/api/repos/${owner}/${name}`, { credentials: 'include' });
       if (res.ok) {
         const info = await res.json();
         onSelectRepo?.(info);
@@ -138,7 +138,8 @@ export const Discover = ({
       const response = await fetch('/api/watchlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo })
+        body: JSON.stringify({ repo }),
+        credentials: 'include'
       });
       if (response.ok) {
         const updatedWatchlist = await response.json();

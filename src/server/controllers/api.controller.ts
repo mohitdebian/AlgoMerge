@@ -7,8 +7,7 @@ export const getIssues = async (req: Request, res: Response) => {
   const { owner, repo: name } = req.params;
   const { labels } = req.query;
 
-  // @ts-ignore
-  if (!req.session.accessToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
@@ -20,8 +19,7 @@ export const getIssues = async (req: Request, res: Response) => {
 
   try {
     checkRateLimit();
-    // @ts-ignore
-    const octokit = getOctokit(req.session.accessToken);
+    const octokit = getOctokit(req.user!.accessToken);
 
     // Build a GitHub Search query that excludes issues with linked PRs
     let q = `repo:${owner}/${name} is:issue is:open -linked:pr`;
@@ -59,8 +57,7 @@ export const getIssues = async (req: Request, res: Response) => {
 import { generateIssueAnalysis } from '../services/ai.service.js';
 
 export const analyzeIssue = async (req: Request, res: Response) => {
-  // @ts-ignore
-  if (!req.session.accessToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
@@ -151,8 +148,7 @@ export const getTrending = async (_req: Request, res: Response) => {
 export const getRepoInfo = async (req: Request, res: Response) => {
   const { owner, repo } = req.params;
 
-  // @ts-ignore
-  if (!req.session.accessToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
@@ -162,8 +158,7 @@ export const getRepoInfo = async (req: Request, res: Response) => {
 
   try {
     checkRateLimit();
-    // @ts-ignore
-    const octokit = getOctokit(req.session.accessToken);
+    const octokit = getOctokit(req.user.accessToken);
     const { data } = await octokit.repos.get({ owner, repo });
 
     const result = {

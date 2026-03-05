@@ -148,7 +148,8 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ repos: result.data }),
-                signal: controller.signal
+                signal: controller.signal,
+                credentials: 'include'
               });
 
               if (!controller.signal.aborted && insightsRes.ok) {
@@ -187,7 +188,8 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
       const response = await fetch('/api/watchlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo: newRepo })
+        body: JSON.stringify({ repo: newRepo }),
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -204,7 +206,8 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
       const response = await fetch('/api/watchlist', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repo })
+        body: JSON.stringify({ repo }),
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();

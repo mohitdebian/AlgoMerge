@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { getAccessToken, getUserProfile } from '../services/github.service.js';
+import { signToken, COOKIE_NAME, COOKIE_OPTIONS } from '../utils/auth.js';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const APP_URL = process.env.APP_URL;
@@ -19,11 +20,13 @@ export const githubCallback = async (req: Request, res: Response) => {
     const accessToken = await getAccessToken(code);
     const userProfile = await getUserProfile(accessToken);
 
-    // @ts-ignore
-    req.session.accessToken = accessToken;
-    // @ts-ignore
-    req.session.user = userProfile;
+    const token = signToken({
+      userId: userProfile.id,
+      username: userProfile.login,
+      accessToken,
+    });
 
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
     res.redirect('/');
   } catch (error) {
     console.error('Error during GitHub OAuth callback:', error);
@@ -32,11 +35,14 @@ export const githubCallback = async (req: Request, res: Response) => {
 };
 
 export const getSession = (req: Request, res: Response) => {
-    // @ts-ignore
-  if (req.session.user) {
-    // @ts-ignore
-    res.json({ user: req.session.user });
+  if (req.user) {
+    res.json({ user: { id: req.user.userId, login: req.user.username } });
   } else {
     res.status(401).json({ message: 'Not authenticated' });
   }
+};
+
+export const logout = (_req: Request, res: Response) => {
+  res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+  res.json({ message: 'Logged out' });
 };
