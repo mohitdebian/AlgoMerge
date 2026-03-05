@@ -6,6 +6,6 @@ const router = Router();
 router.get('/github', githubLogin);
 router.get('/github/callback', githubCallback);
 router.get('/session', getSession);
-router.post('/logout', logout);
+router.get('/logout', logout);
 
 export default router;

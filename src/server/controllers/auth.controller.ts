@@ -45,5 +45,5 @@ export const getSession = (req: Request, res: Response) => {
 
 export const logout = (_req: Request, res: Response) => {
   res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
-  res.json({ message: 'Logged out' });
+  res.redirect('/');
 };
