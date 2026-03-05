@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { createApp } from './api/_lib/app.ts';
+import { createApp } from './src/server/app.ts';
 
 async function startServer() {
   const app = await createApp({ withVite: process.env.NODE_ENV !== 'production' });

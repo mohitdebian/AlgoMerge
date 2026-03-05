@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx --watch --watch-path=src/server --watch-path=server.ts server.ts",
-    "build": "vite build",
+    "build": "vite build && mkdir -p api && esbuild src/server/handler.ts --bundle --outfile=api/index.js --platform=node --format=esm --packages=external --target=node18",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
@@ -34,6 +34,7 @@
     "@types/express-session": "^1.18.2",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
+    "esbuild": "^0.27.3",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2"

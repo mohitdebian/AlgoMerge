@@ -1,4 +1,4 @@
-import { createApp } from './_lib/app';
+import { createApp } from './app';
 
 const appPromise = createApp({ withVite: false });
 
