@@ -23,6 +23,7 @@ export const githubCallback = async (req: Request, res: Response) => {
     const token = signToken({
       userId: userProfile.id,
       username: userProfile.login,
+      avatarUrl: userProfile.avatar_url,
       accessToken,
     });
 
@@ -36,7 +37,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 
 export const getSession = (req: Request, res: Response) => {
   if (req.user) {
-    res.json({ user: { id: req.user.userId, login: req.user.username } });
+    res.json({ user: { id: req.user.userId, login: req.user.username, avatar_url: req.user.avatarUrl } });
   } else {
     res.status(401).json({ message: 'Not authenticated' });
   }

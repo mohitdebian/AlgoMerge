@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-jwt-secret-change-in-productio
 export interface JwtPayload {
   userId: number;
   username: string;
+  avatarUrl: string;
   accessToken: string;
 }
 
