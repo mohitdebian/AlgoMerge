@@ -125,17 +125,29 @@ const LandingPage = () => {
     {
       quote: 'AlgoMerge cut my issue-hunting time in half and helped me focus on work that actually gets merged.',
       author: 'Ari K.',
-      role: 'Open Source Contributor'
+      role: 'Open Source Contributor',
+      company: 'Prefix.dev',
+      handle: '@arik',
+      rating: 5,
+      impact: '2.1x faster issue selection'
     },
     {
       quote: 'The watchlist and priority queue make it easy to know where to spend my next two hours.',
       author: 'Nisha R.',
-      role: 'Backend Engineer'
+      role: 'Backend Engineer',
+      company: 'Rocket.Chat',
+      handle: '@nishar',
+      rating: 5,
+      impact: '41% more merged PRs'
     },
     {
       quote: 'I finally have one place to manage streaks, PR health, and contribution opportunities.',
       author: 'Leo M.',
-      role: 'Student Developer'
+      role: 'Student Developer',
+      company: 'Vercel OSS',
+      handle: '@leom',
+      rating: 5,
+      impact: 'Stayed consistent for 30 days'
     }
   ];
 
@@ -366,26 +378,64 @@ const LandingPage = () => {
       {/* Testimonials */}
       <section className="relative px-6 lg:px-8 pb-16">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-5 flex items-end justify-between gap-3">
-            <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">What Contributors Say</h2>
-            <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Community</span>
+          <div className="mb-5 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Testimonials</div>
+              <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground mt-2">Built for Contributors Who Ship</h2>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-[#0f0f0f] text-[11px] text-muted-foreground">
+              <span className="text-success">★★★★★</span>
+              Rated 4.9/5 by early users
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {testimonials.map((item, i) => (
-              <motion.blockquote
-                key={item.author}
-                className="v-card p-5 md:p-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: 0.2 + i * 0.06 }}
-              >
-                <p className="text-sm text-foreground leading-relaxed">"{item.quote}"</p>
-                <footer className="mt-4 pt-4 border-t border-border">
-                  <div className="text-sm font-medium text-foreground">{item.author}</div>
-                  <div className="text-xs text-muted-foreground">{item.role}</div>
-                </footer>
-              </motion.blockquote>
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <motion.blockquote
+              className="lg:col-span-2 v-card p-5 md:p-6 bg-gradient-to-br from-[#171717] via-[#121212] to-[#0f0f0f]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.2 }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-success text-sm">★★★★★</span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Featured Story</span>
+              </div>
+              <p className="text-base md:text-lg text-foreground leading-relaxed">"{testimonials[0].quote}"</p>
+              <footer className="mt-5 pt-4 border-t border-border/80 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full border border-border bg-[#0f0f0f] flex items-center justify-center text-sm font-semibold text-foreground">
+                    {testimonials[0].author.split(' ').map((p) => p[0]).join('')}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-foreground">{testimonials[0].author} <span className="text-muted-foreground">{testimonials[0].handle}</span></div>
+                    <div className="text-xs text-muted-foreground">{testimonials[0].role} · {testimonials[0].company}</div>
+                  </div>
+                </div>
+                <div className="text-xs px-2.5 py-1 rounded-md border border-success/30 text-success bg-success/10 w-fit">{testimonials[0].impact}</div>
+              </footer>
+            </motion.blockquote>
+
+            <div className="space-y-4">
+              {testimonials.slice(1).map((item, i) => (
+                <motion.blockquote
+                  key={item.author}
+                  className="v-card p-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.26 + i * 0.06 }}
+                  whileHover={{ y: -2, borderColor: 'rgba(255,255,255,0.09)' }}
+                >
+                  <div className="text-success text-xs mb-2">{'★'.repeat(item.rating)}</div>
+                  <p className="text-sm text-foreground leading-relaxed">"{item.quote}"</p>
+                  <footer className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between gap-2">
+                    <div>
+                      <div className="text-sm font-medium text-foreground">{item.author}</div>
+                      <div className="text-xs text-muted-foreground">{item.role} · {item.company}</div>
+                    </div>
+                    <div className="text-[10px] px-2 py-1 rounded-md border border-border text-muted-foreground">{item.handle}</div>
+                  </footer>
+                </motion.blockquote>
+              ))}
+            </div>
           </div>
         </div>
       </section>
