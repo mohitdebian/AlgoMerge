@@ -103,6 +103,44 @@ const LandingPage = () => {
     { label: 'Avg Setup Time', value: '< 2m' },
   ];
 
+  const workflow = [
+    {
+      step: '01',
+      title: 'Connect GitHub',
+      desc: 'Sign in once and import your PR history, issue patterns, and repository context automatically.'
+    },
+    {
+      step: '02',
+      title: 'Pick High-Value Work',
+      desc: 'Discover issues with better fit, lower competition, and stronger probability of merge.'
+    },
+    {
+      step: '03',
+      title: 'Ship With Confidence',
+      desc: 'Track merge signals in real time, prioritize next steps, and maintain contribution momentum.'
+    }
+  ];
+
+  const testimonials = [
+    {
+      quote: 'AlgoMerge cut my issue-hunting time in half and helped me focus on work that actually gets merged.',
+      author: 'Ari K.',
+      role: 'Open Source Contributor'
+    },
+    {
+      quote: 'The watchlist and priority queue make it easy to know where to spend my next two hours.',
+      author: 'Nisha R.',
+      role: 'Backend Engineer'
+    },
+    {
+      quote: 'I finally have one place to manage streaks, PR health, and contribution opportunities.',
+      author: 'Leo M.',
+      role: 'Student Developer'
+    }
+  ];
+
+  const logos = ['Prefix.dev', 'Rocket.Chat', 'Vercel OSS', 'AionDemand', 'Rattler'];
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Dot grid background */}
@@ -275,6 +313,105 @@ const LandingPage = () => {
                 <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Social Proof */}
+      <section className="relative px-6 lg:px-8 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mb-3">Contributors Work Across</div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-px rounded-xl overflow-hidden border border-border/80 bg-border">
+            {logos.map((logo, i) => (
+              <motion.div
+                key={logo}
+                className="bg-card px-4 py-4 text-center text-xs md:text-sm font-medium text-muted-foreground"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + i * 0.05 }}
+              >
+                {logo}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow */}
+      <section className="relative px-6 lg:px-8 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-5">
+            <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground">How It Works</div>
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground mt-2">A Faster Contribution Workflow</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {workflow.map((item, i) => (
+              <motion.div
+                key={item.step}
+                className="v-card p-5 md:p-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.15 + i * 0.06 }}
+                whileHover={{ y: -2, borderColor: 'rgba(255,255,255,0.09)' }}
+              >
+                <div className="text-[10px] uppercase tracking-[0.2em] text-success mb-3">Step {item.step}</div>
+                <h3 className="text-base font-semibold text-foreground mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="relative px-6 lg:px-8 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-5 flex items-end justify-between gap-3">
+            <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">What Contributors Say</h2>
+            <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Community</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {testimonials.map((item, i) => (
+              <motion.blockquote
+                key={item.author}
+                className="v-card p-5 md:p-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.2 + i * 0.06 }}
+              >
+                <p className="text-sm text-foreground leading-relaxed">"{item.quote}"</p>
+                <footer className="mt-4 pt-4 border-t border-border">
+                  <div className="text-sm font-medium text-foreground">{item.author}</div>
+                  <div className="text-xs text-muted-foreground">{item.role}</div>
+                </footer>
+              </motion.blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="relative px-6 lg:px-8 pb-16">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            className="v-card p-6 md:p-8 bg-gradient-to-br from-[#181818] via-[#131313] to-[#101010]"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.28 }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground mb-2">Ready to contribute smarter?</div>
+                <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">Start Your Contributor Command Center</h3>
+              </div>
+              <a
+                href="/api/auth/github"
+                className="v-btn-primary inline-flex items-center gap-2.5 px-6 py-3 rounded-lg text-sm font-semibold whitespace-nowrap"
+              >
+                <GitHubIcon />
+                Get Started with GitHub
+              </a>
+            </div>
           </motion.div>
         </div>
       </section>
