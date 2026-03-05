@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { getOctokit, checkRateLimit, handleRateLimitError } from '../services/github.service';
-import * as scoring from '../services/scoring.service';
-import { serverCache, longCache } from '../utils/cache';
+import { getOctokit, checkRateLimit, handleRateLimitError } from '../services/github.service.js';
+import * as scoring from '../services/scoring.service.js';
+import { serverCache, longCache } from '../utils/cache.js';
 
 export const getIssues = async (req: Request, res: Response) => {
   const { owner, repo: name } = req.params;
@@ -56,7 +56,7 @@ export const getIssues = async (req: Request, res: Response) => {
   }
 };
 
-import { generateIssueAnalysis } from '../services/ai.service';
+import { generateIssueAnalysis } from '../services/ai.service.js';
 
 export const analyzeIssue = async (req: Request, res: Response) => {
   // @ts-ignore

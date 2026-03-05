@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getAccessToken, getUserProfile } from '../services/github.service';
+import { getAccessToken, getUserProfile } from '../services/github.service.js';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const APP_URL = process.env.APP_URL;

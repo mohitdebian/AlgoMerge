@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getWatchlist, addToWatchlist, removeFromWatchlist, fetchRepoInsights, fetchBatchRepoInsights } from '../controllers/watchlist.controller';
+import { getWatchlist, addToWatchlist, removeFromWatchlist, fetchRepoInsights, fetchBatchRepoInsights } from '../controllers/watchlist.controller.js';
 
 const router = Router();
 

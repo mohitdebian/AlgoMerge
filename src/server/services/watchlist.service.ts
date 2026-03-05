@@ -1,6 +1,6 @@
-import { getOctokit } from './github.service';
-import { calculateMergeProbability } from './scoring.service';
-import { serverCache } from '../utils/cache';
+import { getOctokit } from './github.service.js';
+import { calculateMergeProbability } from './scoring.service.js';
+import { serverCache } from '../utils/cache.js';
 
 // In a real app, this would be more sophisticated
 const calculateRepoInsights = (issues: any[]) => {

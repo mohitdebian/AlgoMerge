@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { getOctokit, getUserProfile, checkRateLimit, handleRateLimitError } from '../services/github.service';
-import { calculateMergeProbability } from '../services/scoring.service';
-import { serverCache } from '../utils/cache';
+import { getOctokit, getUserProfile, checkRateLimit, handleRateLimitError } from '../services/github.service.js';
+import { calculateMergeProbability } from '../services/scoring.service.js';
+import { serverCache } from '../utils/cache.js';
 
 /**
  * Ensures req.session has both accessToken and user.

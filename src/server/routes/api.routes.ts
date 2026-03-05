@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getIssues, analyzeIssue, getTrending, getRepoInfo } from '../controllers/api.controller';
+import { getIssues, analyzeIssue, getTrending, getRepoInfo } from '../controllers/api.controller.js';
 
 const router = Router();
 

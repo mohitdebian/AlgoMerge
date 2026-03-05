@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import * as UserModel from '../models/user.model';
-import { getRepoInsights, getBatchRepoInsights } from '../services/watchlist.service';
-import { handleRateLimitError, checkRateLimit } from '../services/github.service';
+import * as UserModel from '../models/user.model.js';
+import { getRepoInsights, getBatchRepoInsights } from '../services/watchlist.service.js';
+import { handleRateLimitError, checkRateLimit } from '../services/github.service.js';
 
 export const getWatchlist = (req: Request, res: Response) => {
   // @ts-ignore

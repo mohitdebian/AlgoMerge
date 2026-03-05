@@ -1,10 +1,10 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import authRoutes from './routes/auth.routes';
-import apiRoutes from './routes/api.routes';
-import watchlistRoutes from './routes/watchlist.routes';
-import userRoutes from './routes/user.routes';
+import authRoutes from './routes/auth.routes.js';
+import apiRoutes from './routes/api.routes.js';
+import watchlistRoutes from './routes/watchlist.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 export const createApp = async ({ withVite = false }: { withVite?: boolean } = {}) => {
   const app = express();
