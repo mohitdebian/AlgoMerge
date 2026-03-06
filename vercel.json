@@ -5,12 +5,12 @@
   "outputDirectory": "dist",
   "functions": {
     "api/index.ts": {
-      "includeFiles": "src/server/**"
+      "includeFiles": ["src/server/**", "dist/index.html"]
     }
   },
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/u/:username", "destination": "/api/u/:username" },
+    { "source": "/u/:username", "destination": "/api" },
     { "source": "/((?!api/|_vercel/).*)", "destination": "/index.html" }
   ]
 }
