@@ -3,32 +3,47 @@ import * as UserModel from '../models/user.model.js';
 import { getRepoInsights, getBatchRepoInsights } from '../services/watchlist.service.js';
 import { handleRateLimitError, checkRateLimit } from '../services/github.service.js';
 
-export const getWatchlist = (req: Request, res: Response) => {
+export const getWatchlist = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
-  const watchlist = UserModel.getWatchlist(req.user.userId.toString());
-  res.json(watchlist);
+  try {
+    const watchlist = await UserModel.getWatchlist(req.user.userId.toString());
+    res.json(watchlist);
+  } catch (error) {
+    console.error('Failed to get watchlist:', error);
+    res.status(500).json({ message: 'Failed to get watchlist' });
+  }
 };
 
-export const addToWatchlist = (req: Request, res: Response) => {
+export const addToWatchlist = async (req: Request, res: Response) => {
   const { repo } = req.body;
   if (!req.user || !repo) {
     return res.status(400).json({ message: 'Missing user or repo' });
   }
 
-  const updatedUser = UserModel.addToWatchlist(req.user.userId.toString(), repo);
-  res.json(updatedUser.watchlist);
+  try {
+    const updatedWatchlist = await UserModel.addToWatchlist(req.user.userId.toString(), repo);
+    res.json(updatedWatchlist);
+  } catch (error) {
+    console.error('Failed to add to watchlist:', error);
+    res.status(500).json({ message: 'Failed to add to watchlist' });
+  }
 };
 
-export const removeFromWatchlist = (req: Request, res: Response) => {
+export const removeFromWatchlist = async (req: Request, res: Response) => {
   const { repo } = req.body;
   if (!req.user || !repo) {
     return res.status(400).json({ message: 'Missing user or repo' });
   }
 
-  const updatedUser = UserModel.removeFromWatchlist(req.user.userId.toString(), repo);
-  res.json(updatedUser?.watchlist || []);
+  try {
+    const updatedWatchlist = await UserModel.removeFromWatchlist(req.user.userId.toString(), repo);
+    res.json(updatedWatchlist);
+  } catch (error) {
+    console.error('Failed to remove from watchlist:', error);
+    res.status(500).json({ message: 'Failed to remove from watchlist' });
+  }
 };
 
 export const fetchRepoInsights = async (req: Request, res: Response) => {

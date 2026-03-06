@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { IssueCard } from '../components/IssueCard';
-import { apiFetch } from '../lib/api';
+import { apiFetch, invalidateCachePrefix } from '../lib/api';
 
 export const Discover = ({
   initialRepo,
@@ -143,6 +143,7 @@ export const Discover = ({
       });
       if (response.ok) {
         const updatedWatchlist = await response.json();
+        invalidateCachePrefix('/api/watchlist');
         setTrackFeedback(`Added ${repo} to watchlist`);
         onTrackedRepo?.(repo, Array.isArray(updatedWatchlist) ? updatedWatchlist : undefined);
       } else {
@@ -204,6 +205,17 @@ export const Discover = ({
   const formatStars = (n: number) => {
     if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
     return String(n);
+  };
+
+  const normalizeTrendingRepo = (item: any) => {
+    const repoName = item.repo || item.full_name || item.name || '';
+    return {
+      repo: repoName,
+      desc: item.desc || item.description || 'No description available.',
+      language: item.language || 'Unknown',
+      stars: typeof item.stars === 'number' ? item.stars : (item.stargazers_count || 0),
+      starsToday: item.starsToday || 0,
+    };
   };
 
   const filters = [
@@ -460,14 +472,22 @@ export const Discover = ({
             </div>
           ) : trending.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {trending.map((item: any, i: number) => (
+              {trending.map((item: any, i: number) => {
+                const normalized = normalizeTrendingRepo(item);
+                return (
                 <motion.button
-                  key={item.repo}
+                  key={normalized.repo || i}
                   onClick={() => {
-                    setRepo(item.repo);
-                    onSelectRepo?.({ repo: item.repo, desc: item.desc, stars: item.stars, language: item.language });
-                    void fetchRepoInfo(item.repo);
-                    loadIssues(item.repo, '');
+                    if (!normalized.repo) return;
+                    setRepo(normalized.repo);
+                    onSelectRepo?.({
+                      repo: normalized.repo,
+                      desc: normalized.desc,
+                      stars: normalized.stars,
+                      language: normalized.language
+                    });
+                    void fetchRepoInfo(normalized.repo);
+                    loadIssues(normalized.repo, '');
                   }}
                   className="v-card p-4 text-left flex flex-col h-full cursor-pointer hover:border-white/[0.15] transition-colors"
                   initial={{ opacity: 0, y: 12 }}
@@ -476,16 +496,17 @@ export const Discover = ({
                   whileHover={{ y: -2 }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-[13px] text-foreground truncate pr-2">{item.repo}</h3>
-                    <span className="text-[10px] text-muted-foreground font-mono">{formatStars(item.stars)}</span>
+                    <h3 className="font-medium text-[13px] text-foreground truncate pr-2">{normalized.repo || 'Unknown repository'}</h3>
+                    <span className="text-[10px] text-muted-foreground font-mono">{formatStars(normalized.stars)}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground/70 line-clamp-2 leading-relaxed flex-1">{item.desc}</p>
+                  <p className="text-[11px] text-muted-foreground/70 line-clamp-2 leading-relaxed flex-1">{normalized.desc}</p>
                   <div className="flex items-center justify-between mt-3 pt-2 border-t border-border text-[10px]">
-                    {item.language && item.language !== 'Unknown' ? <span className="text-muted-foreground">{item.language}</span> : <span />}
-                    {item.starsToday > 0 && <span className="text-success font-mono">+{formatStars(item.starsToday)}</span>}
+                    {normalized.language && normalized.language !== 'Unknown' ? <span className="text-muted-foreground">{normalized.language}</span> : <span />}
+                    {normalized.starsToday > 0 && <span className="text-success font-mono">+{formatStars(normalized.starsToday)}</span>}
                   </div>
                 </motion.button>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-8 text-xs">Could not load trending repos. Try refreshing.</div>

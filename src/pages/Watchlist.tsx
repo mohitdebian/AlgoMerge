@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'motion/react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, invalidateCachePrefix } from '../lib/api';
 
 const WatchlistItem: React.FC<{
   repo: string;
@@ -136,7 +136,7 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
     const controller = new AbortController();
     const fetchWatchlist = async () => {
       try {
-        const result = await apiFetch<string[]>('/api/watchlist', { signal: controller.signal });
+        const result = await apiFetch<string[]>('/api/watchlist', { signal: controller.signal, cacheTTL: refreshKey > 0 ? 0 : undefined });
         if (controller.signal.aborted) return;
 
         if (result.ok && result.data) {
@@ -193,6 +193,7 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
       });
       if (response.ok) {
         const data = await response.json();
+        invalidateCachePrefix('/api/watchlist');
         setWatchlist(data);
         setNewRepo('');
       }
@@ -211,6 +212,7 @@ export const Watchlist = ({ onExplore, refreshKey = 0 }: { onExplore: (repo: str
       });
       if (response.ok) {
         const data = await response.json();
+        invalidateCachePrefix('/api/watchlist');
         setWatchlist(data);
       }
     } catch (error) {

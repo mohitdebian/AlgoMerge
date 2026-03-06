@@ -75,7 +75,7 @@ const parseSections = (md: string) => {
 
 // ─── Component ────────────────────────────────────────────────────
 
-export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => {
+export const IssueAnalysis: React.FC<{ issue: AnalysisIssue; theme?: 'dark' | 'light' }> = ({ issue, theme = 'dark' }) => {
     const [analysis, setAnalysis] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -165,7 +165,9 @@ export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => 
         }
     };
 
-    const proseClasses = "prose prose-invert prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-headings:font-semibold prose-a:text-foreground prose-strong:text-foreground prose-code:text-foreground prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-[#111] prose-pre:text-[#999] prose-pre:border prose-pre:border-border prose-li:marker:text-muted-foreground";
+    const proseClasses = theme === 'light'
+        ? "prose prose-sm max-w-none text-[#374151] prose-headings:text-[#111827] prose-headings:font-semibold prose-a:text-[#1f2937] prose-strong:text-[#111827] prose-code:text-[#111827] prose-code:bg-[#eef2f7] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-[#f8fafc] prose-pre:text-[#1f2937] prose-pre:border prose-pre:border-[#d6dde8] prose-li:marker:text-[#6b7280]"
+        : "prose prose-invert prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-headings:font-semibold prose-a:text-foreground prose-strong:text-foreground prose-code:text-foreground prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-[#111] prose-pre:text-[#999] prose-pre:border prose-pre:border-border prose-li:marker:text-muted-foreground";
 
     const mergeBarRef = useRef(null);
     const mergeBarInView = useInView(mergeBarRef, { once: true });
@@ -207,7 +209,7 @@ export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => 
                             {issue.labels.slice(0, 3).map((label: any) => (
                                 <span
                                     key={label.id || label.name}
-                                    className="text-[10px] px-1.5 py-0.5 rounded-md bg-[#111] text-muted-foreground"
+                                    className={`text-[10px] px-1.5 py-0.5 rounded-md ${theme === 'light' ? 'bg-[#eef2f7] text-[#4b5563]' : 'bg-[#111] text-muted-foreground'}`}
                                 >
                                     {label.name}
                                 </span>
@@ -280,7 +282,7 @@ export const IssueAnalysis: React.FC<{ issue: AnalysisIssue }> = ({ issue }) => 
                     {issue.body && (
                         <motion.div className="v-card p-6" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.3 }}>
                             <h2 className="text-sm font-medium mb-4 pb-3 border-b border-border">Original Description</h2>
-                            <div className="prose prose-invert prose-sm max-w-none text-muted-foreground prose-headings:text-foreground prose-a:text-foreground prose-code:text-foreground prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-pre:bg-[#111] prose-pre:text-[#999] prose-pre:border prose-pre:border-border">
+                            <div className={proseClasses}>
                                 <ReactMarkdown>{issue.body}</ReactMarkdown>
                             </div>
                         </motion.div>

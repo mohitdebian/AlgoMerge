@@ -63,6 +63,27 @@
   --ring: #444444;
 }
 
+:root.theme-light {
+  --background: #f6f8fc;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+
+  --primary: #111827;
+  --primary-foreground: #ffffff;
+
+  --secondary: #ecf0f7;
+  --secondary-foreground: #111827;
+  --muted: #f1f5f9;
+  --muted-foreground: #4b5563;
+
+  --accent: #e5ebf5;
+  --accent-foreground: #111827;
+  --border: #d6dde8;
+  --input: #eef2f7;
+  --ring: #9ca3af;
+}
+
 /* Base styles */
 * {
   border-color: var(--border);
@@ -78,6 +99,10 @@ html {
 
 body {
   min-height: 100vh;
+  background-color: var(--background);
+}
+
+.theme-light body {
   background-color: var(--background);
 }
 
@@ -98,6 +123,14 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #333;
+}
+
+.theme-light ::-webkit-scrollbar-thumb {
+  background: #c4ccd8;
+}
+
+.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: #a7b0be;
 }
 
 /* ---- Animations ---- */
@@ -239,6 +272,76 @@ body {
   background: #111;
   color: #ededed;
   border-color: #333;
+}
+
+.theme-light .v-card {
+  background: #ffffff;
+  border-color: #d6dde8;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+}
+
+.theme-light .v-card:hover,
+.theme-light .v-card-interactive:hover {
+  border-color: #c5d0df;
+}
+
+.theme-light .v-glass {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.theme-light .v-btn-primary {
+  background: #111827;
+  color: #ffffff;
+}
+
+.theme-light .v-btn-primary:hover {
+  background: #1f2937;
+}
+
+.theme-light .v-btn-secondary {
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.theme-light .v-btn-secondary:hover {
+  background: #eef2f7;
+  color: #111827;
+  border-color: #b8c4d5;
+}
+
+/* Override common hardcoded dark utility classes used throughout pages. */
+.theme-light .bg-\[\#0f0f0f\],
+.theme-light .bg-\[\#101010\],
+.theme-light .bg-\[\#111\],
+.theme-light .bg-\[\#121212\],
+.theme-light .bg-\[\#171717\],
+.theme-light .bg-\[\#131313\],
+.theme-light .bg-\[\#181818\],
+.theme-light .bg-\[\#191919\],
+.theme-light .bg-black {
+  background-color: #f8fafc !important;
+}
+
+.theme-light .border-\[\#3a3a3a\],
+.theme-light .border-\[\#333\],
+.theme-light .border-\[\#262626\] {
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light .text-foreground {
+  color: #111827 !important;
+}
+
+.theme-light .text-muted-foreground {
+  color: #4b5563 !important;
+}
+
+.theme-light .text-gradient {
+  background: linear-gradient(180deg, #111827 0%, #4b5563 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* ---- Progress bar ---- */

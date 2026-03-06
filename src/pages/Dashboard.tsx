@@ -11,6 +11,41 @@ type DashboardStats = {
   currentStreak?: number;
   maxStreak?: number;
   recentActivityDates?: number[];
+  momentum?: {
+    weekly?: Array<{
+      weekLabel: string;
+      activeDays: number;
+      createdPRs: number;
+      mergedPRs: number;
+      consistencyScore: number;
+      impactScore: number;
+      consistencyGrade: number;
+      impactGrade: number;
+    }>;
+    currentConsistencyGrade?: number;
+    currentImpactGrade?: number;
+  };
+  challenges?: Array<{
+    id: string;
+    title: string;
+    detail: string;
+    target: number;
+    progress: number;
+    complete: boolean;
+  }>;
+  nudges?: Array<{
+    id: string;
+    message: string;
+    tone: 'up' | 'neutral' | 'alert';
+  }>;
+  badges?: Array<{
+    id: string;
+    label: string;
+    detail: string;
+    target: number;
+    progress: number;
+    unlocked: boolean;
+  }>;
 };
 
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
@@ -116,6 +151,12 @@ const getUrgencyChip = (urgency: PriorityAction['urgency']) => {
   return 'text-success border-success/30 bg-success/8';
 };
 
+const getNudgeToneClass = (tone: 'up' | 'neutral' | 'alert') => {
+  if (tone === 'alert') return 'border-danger/30 bg-danger/10 text-danger';
+  if (tone === 'neutral') return 'border-warning/30 bg-warning/10 text-warning';
+  return 'border-success/30 bg-success/10 text-success';
+};
+
 export const Dashboard = ({ user }: { user: any }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [priorityActions, setPriorityActions] = useState<PriorityAction[]>([]);
@@ -171,7 +212,11 @@ export const Dashboard = ({ user }: { user: any }) => {
   const mergeRate = stats?.mergeRate ?? 0;
   const currentStreak = stats?.currentStreak ?? 0;
   const maxStreak = stats?.maxStreak ?? 0;
-  const productivityScore = Math.min(100, Math.round((mergeRate * 0.7) + (Math.min(30, currentStreak) * 1.0)));
+  const momentumWeekly = stats?.momentum?.weekly || [];
+  const maxMomentumScore = Math.max(1, ...momentumWeekly.map((week) => Math.max(week.consistencyScore, week.impactScore)));
+  const challengeItems = stats?.challenges || [];
+  const nudgeItems = stats?.nudges || [];
+  const badgeItems = stats?.badges || [];
 
   const weeklySeries = useMemo(() => {
     const recent = new Set(stats?.recentActivityDates || []);
@@ -233,20 +278,17 @@ export const Dashboard = ({ user }: { user: any }) => {
       suffix: 'd',
       detail: `Best streak: ${maxStreak} days`,
       accent: 'bg-[#60a5fa]'
-    },
-    {
-      title: 'Productivity Score',
-      value: productivityScore,
-      suffix: '%',
-      detail: 'Blend of quality and consistency',
-      accent: 'bg-[#c084fc]'
     }
   ];
 
   const fallbackAction: PriorityAction = {
+    id: 'fallback-action',
     urgency: 'low',
     title: 'No urgent actions right now',
     desc: 'Track repositories or open new PRs to populate this queue.',
+    cta: 'Explore',
+    icon: '•',
+    type: 'opportunity',
     link: '#'
   };
 
@@ -305,6 +347,66 @@ export const Dashboard = ({ user }: { user: any }) => {
           />
         ))}
       </div>
+
+      <Section title="Momentum Scorecard" caption="8-week trajectory" delay={0.1}>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
+          <div className="xl:col-span-8 rounded-xl border border-border bg-[#0f0f0f] p-4">
+            {momentumWeekly.length ? (
+              <div className="h-44 flex items-end gap-2">
+                {momentumWeekly.map((week, index) => {
+                  const consistencyHeight = Math.max(10, Math.round((week.consistencyScore / maxMomentumScore) * 100));
+                  const impactHeight = Math.max(10, Math.round((week.impactScore / maxMomentumScore) * 100));
+                  return (
+                    <motion.div
+                      key={week.weekLabel}
+                      className="flex-1 min-w-[28px]"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.03 }}
+                    >
+                      <div className="h-32 flex items-end justify-center gap-1">
+                        <div
+                          className="w-[10px] rounded-t border border-success/40 bg-success/70"
+                          style={{ height: `${consistencyHeight}%` }}
+                          title={`${week.weekLabel}: Consistency ${week.consistencyScore}%`}
+                        />
+                        <div
+                          className="w-[10px] rounded-t border border-[#8ab4ff]/40 bg-[#8ab4ff]/80"
+                          style={{ height: `${impactHeight}%` }}
+                          title={`${week.weekLabel}: Impact ${week.impactScore}%`}
+                        />
+                      </div>
+                      <div className="mt-2 text-center text-[10px] text-muted-foreground">{week.weekLabel}</div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="h-44 flex items-center justify-center text-sm text-muted-foreground">No momentum history available yet.</div>
+            )}
+            <div className="mt-3 flex items-center justify-end gap-3 text-[10px] text-muted-foreground">
+              <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-success" />Consistency</span>
+              <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#8ab4ff]" />Impact</span>
+            </div>
+          </div>
+          <div className="xl:col-span-4 rounded-xl border border-border bg-[#101010] p-4 space-y-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Current Grades</div>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <div className="rounded-lg border border-border bg-black/20 p-3 text-center">
+                  <div className="text-[10px] text-muted-foreground">Consistency</div>
+                  <div className="text-xl font-semibold text-success">{stats?.momentum?.currentConsistencyGrade != null ? <>{stats.momentum.currentConsistencyGrade}<span className="text-xs font-normal text-muted-foreground">/10</span></> : '-'}</div>
+                </div>
+                <div className="rounded-lg border border-border bg-black/20 p-3 text-center">
+                  <div className="text-[10px] text-muted-foreground">Impact</div>
+                  <div className="text-xl font-semibold text-[#8ab4ff]">{stats?.momentum?.currentImpactGrade != null ? <>{stats.momentum.currentImpactGrade}<span className="text-xs font-normal text-muted-foreground">/10</span></> : '-'}</div>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">Momentum combines active days, PR output, and merged outcomes so quality progress is visible week-over-week.</p>
+          </div>
+        </div>
+      </Section>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-6">
         <div className="xl:col-span-8 space-y-4 md:space-y-6">
@@ -397,6 +499,40 @@ export const Dashboard = ({ user }: { user: any }) => {
               <span>Today</span>
             </div>
           </Section>
+
+          <Section title="Challenge Mode" caption="Weekly missions" delay={0.2}>
+            <div className="space-y-2">
+              {(challengeItems.length ? challengeItems : []).map((challenge) => {
+                const safeTarget = Math.max(1, challenge.target);
+                const percent = Math.min(100, Math.round((challenge.progress / safeTarget) * 100));
+                return (
+                  <div key={challenge.id} className="rounded-lg border border-border bg-[#101010] p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">{challenge.title}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{challenge.detail}</div>
+                      </div>
+                      <span className={`text-[10px] uppercase tracking-[0.12em] px-2 py-1 rounded border ${challenge.complete ? 'text-success border-success/30 bg-success/10' : 'text-warning border-warning/30 bg-warning/10'}`}>
+                        {challenge.complete ? 'Complete' : 'In Progress'}
+                      </span>
+                    </div>
+                    <div className="mt-3 h-2 rounded-full bg-[#141414] border border-border overflow-hidden">
+                      <motion.div
+                        className={`h-full rounded-full ${challenge.complete ? 'bg-success' : 'bg-warning'}`}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${percent}%` }}
+                        transition={{ duration: 0.45 }}
+                      />
+                    </div>
+                    <div className="mt-2 text-[11px] text-muted-foreground">{challenge.progress} / {challenge.target}</div>
+                  </div>
+                );
+              })}
+              {!challengeItems.length && (
+                <div className="rounded-lg border border-border bg-[#101010] p-4 text-sm text-muted-foreground">Challenges will unlock after dashboard sync.</div>
+              )}
+            </div>
+          </Section>
         </div>
 
         <div className="xl:col-span-4 space-y-4 md:space-y-6">
@@ -455,6 +591,48 @@ export const Dashboard = ({ user }: { user: any }) => {
                   ? 'Syncing your latest PR and watchlist activity.'
                   : 'Dashboard metrics are synced and ready for action.'}
               </div>
+            </div>
+          </Section>
+
+          <Section title="Habit Nudges" caption="Coaching" delay={0.3}>
+            <div className="space-y-2">
+              {nudgeItems.map((nudge) => (
+                <div key={nudge.id} className="rounded-lg border border-border bg-[#101010] p-3">
+                  <span className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-[0.12em] ${getNudgeToneClass(nudge.tone)}`}>
+                    {nudge.tone}
+                  </span>
+                  <p className="mt-2 text-xs text-foreground/90 leading-relaxed">{nudge.message}</p>
+                </div>
+              ))}
+              {!nudgeItems.length && (
+                <div className="rounded-lg border border-border bg-[#101010] p-3 text-xs text-muted-foreground">No nudges right now.</div>
+              )}
+            </div>
+          </Section>
+
+          <Section title="Milestone Badges" caption="Meaningful wins" delay={0.32}>
+            <div className="grid grid-cols-1 gap-2">
+              {badgeItems.map((badge) => {
+                const safeTarget = Math.max(1, badge.target);
+                const percent = Math.min(100, Math.round((badge.progress / safeTarget) * 100));
+                return (
+                  <div key={badge.id} className={`rounded-lg border p-3 ${badge.unlocked ? 'border-success/30 bg-success/8' : 'border-border bg-[#101010]'}`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-xs font-semibold text-foreground">{badge.label}</div>
+                      <span className={`text-[10px] uppercase tracking-[0.12em] ${badge.unlocked ? 'text-success' : 'text-muted-foreground'}`}>
+                        {badge.unlocked ? 'Unlocked' : 'Locked'}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{badge.detail}</p>
+                    <div className="mt-2 h-1.5 rounded-full bg-[#141414] border border-border overflow-hidden">
+                      <div className={`h-full rounded-full ${badge.unlocked ? 'bg-success' : 'bg-[#6f6f6f]'}`} style={{ width: `${percent}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+              {!badgeItems.length && (
+                <div className="rounded-lg border border-border bg-[#101010] p-3 text-xs text-muted-foreground">Badges will appear once performance data is available.</div>
+              )}
             </div>
           </Section>
         </div>

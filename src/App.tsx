@@ -11,6 +11,10 @@ import { MyPRs } from './pages/MyPRs';
 import { MyIssues } from './pages/MyIssues';
 import { Dashboard } from './pages/Dashboard';
 import { IssueAnalysis } from './pages/IssueAnalysis';
+import { PublicScorecard } from './pages/PublicScorecard';
+import { Profile } from './pages/Profile';
+
+type ThemeMode = 'dark' | 'light';
 
 // ─── Icons (inline SVG) ───────────────────────────────────────────
 
@@ -70,10 +74,30 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const ThemeIcon = ({ theme }: { theme: ThemeMode }) => (
+  theme === 'light' ? (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3a6.5 6.5 0 1 0 9 9 8 8 0 1 1-9-9" />
+    </svg>
+  )
+);
+
 
 // ─── Landing Page (Logged Out) ────────────────────────────────────
 
-const LandingPage = () => {
+const LandingPage = ({ theme, toggleTheme }: { theme: ThemeMode; toggleTheme: () => void }) => {
   const features = [
     {
       title: 'Merge Probability Engine',
@@ -167,13 +191,23 @@ const LandingPage = () => {
           <span className="text-foreground"><RadarIcon /></span>
           <span className="text-sm font-semibold tracking-tight">Algomerge</span>
         </div>
-        <a
-          href="/api/auth/github"
-          className="v-btn-secondary flex items-center gap-2 text-xs py-2 px-4"
-        >
-          <GitHubIcon />
-          <span>Sign in</span>
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="v-btn-secondary flex items-center gap-2 text-xs py-2 px-3"
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            <ThemeIcon theme={theme} />
+            <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+          <a
+            href="/api/auth/github"
+            className="v-btn-secondary flex items-center gap-2 text-xs py-2 px-4"
+          >
+            <GitHubIcon />
+            <span>Sign in</span>
+          </a>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -485,12 +519,20 @@ const IssueIcon = () => (
   </svg>
 );
 
+const ProfileIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21a8 8 0 0 0-16 0" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon />, shortcut: 'D' },
   { id: 'discover', label: 'Discover', icon: <DiscoverIcon />, shortcut: 'F' },
   { id: 'watchlist', label: 'Watchlist', icon: <WatchlistIcon />, shortcut: 'W' },
   { id: 'my-prs', label: 'My PRs', icon: <PRIcon />, shortcut: 'P' },
   { id: 'my-issues', label: 'My Issues', icon: <IssueIcon />, shortcut: 'I' },
+  { id: 'profile', label: 'Profile', icon: <ProfileIcon />, shortcut: 'U' },
 ];
 
 const isTypingTarget = (target: EventTarget | null) => {
@@ -512,18 +554,22 @@ const Sidebar = ({
   page,
   setPage,
   analysisIssueTitle,
-  selectedRepoInfo
+  selectedRepoInfo,
+  theme,
+  toggleTheme
 }: {
   user: any;
   page: string;
   setPage: (p: string) => void;
   analysisIssueTitle?: string;
   selectedRepoInfo?: { repo: string; desc?: string } | null;
+  theme: ThemeMode;
+  toggleTheme: () => void;
 }) => (
-  <aside className="fixed top-0 left-0 bottom-0 w-64 z-40 p-3 border-r border-border bg-[#090909]">
-    <div className="h-full w-full rounded-xl border border-border bg-gradient-to-b from-[#141414] via-[#101010] to-[#0d0d0d] flex flex-col overflow-hidden">
-      <div className="relative px-4 pt-4 pb-3 border-b border-border/80">
-        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/5 blur-2xl" />
+  <aside className={`fixed top-0 left-0 bottom-0 w-64 z-40 p-3 border-r ${theme === 'light' ? 'border-[#d4dde8] bg-[#edf2f8]' : 'border-border bg-[#090909]'}`}>
+    <div className={`h-full w-full rounded-xl border flex flex-col overflow-hidden ${theme === 'light' ? 'border-[#d4dde8] bg-gradient-to-b from-[#ffffff] via-[#f8fafc] to-[#f1f5f9]' : 'border-border bg-gradient-to-b from-[#141414] via-[#101010] to-[#0d0d0d]'}`}>
+      <div className={`relative px-4 pt-4 pb-3 ${theme === 'light' ? 'border-b border-[#dde5ef]' : 'border-b border-border/80'}`}>
+        <div className={`absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl ${theme === 'light' ? 'bg-[#0f172a]/5' : 'bg-white/5'}`} />
         <div className="relative flex items-center gap-2.5">
           <span className="text-foreground"><RadarIcon /></span>
           <div>
@@ -540,27 +586,27 @@ const Sidebar = ({
             <button
               key={item.id}
               onClick={() => setPage(item.id)}
-              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer w-full text-left
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer w-full text-left ${theme === 'light' ? 'hover:bg-[#e8edf5]' : ''}
                 ${page === item.id
                   ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
+                  : theme === 'light' ? 'text-[#4b5563] hover:text-[#111827]' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
                 }`}
             >
               {page === item.id && (
                 <>
                   <motion.div
-                    className="absolute inset-0 rounded-lg bg-white/[0.06] border border-white/[0.08]"
+                    className={`absolute inset-0 rounded-lg ${theme === 'light' ? 'bg-[#e7ecf4] border border-[#c7d1de]' : 'bg-white/[0.06] border border-white/[0.08]'}`}
                     layoutId="sidebar-active"
                     transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
-                  <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-white" />
+                  <span className={`absolute left-0 top-2 bottom-2 w-1 rounded-r-full ${theme === 'light' ? 'bg-[#475569]' : 'bg-white'}`} />
                 </>
               )}
               <span className="relative z-10 flex items-center gap-3">
                 {item.icon}
                 {item.label}
               </span>
-              <span className="relative z-10 ml-auto text-[10px] px-1.5 py-0.5 rounded border border-border/80 text-muted-foreground/80 bg-black/20">
+              <span className={`relative z-10 ml-auto text-[10px] px-1.5 py-0.5 rounded border ${theme === 'light' ? 'border-[#cfd8e3] text-[#6b7280] bg-[#f8fafc]' : 'border-border/80 text-muted-foreground/80 bg-black/20'}`}>
                 {item.shortcut}
               </span>
             </button>
@@ -572,20 +618,20 @@ const Sidebar = ({
             <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground px-2 mb-2">In Progress</div>
             <button
               onClick={() => setPage('issue-analysis')}
-              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer w-full text-left
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer w-full text-left ${theme === 'light' ? 'hover:bg-[#e8edf5]' : ''}
                 ${page === 'issue-analysis'
                   ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
+                  : theme === 'light' ? 'text-[#4b5563] hover:text-[#111827]' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'
                 }`}
             >
               {page === 'issue-analysis' && (
                 <>
                   <motion.div
-                    className="absolute inset-0 rounded-lg bg-white/[0.06] border border-white/[0.08]"
+                    className={`absolute inset-0 rounded-lg ${theme === 'light' ? 'bg-[#e7ecf4] border border-[#c7d1de]' : 'bg-white/[0.06] border border-white/[0.08]'}`}
                     layoutId="sidebar-active"
                     transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                   />
-                  <span className="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-white" />
+                  <span className={`absolute left-0 top-2 bottom-2 w-1 rounded-r-full ${theme === 'light' ? 'bg-[#475569]' : 'bg-white'}`} />
                 </>
               )}
               <span className="relative z-10 flex items-center gap-3 min-w-0">
@@ -597,11 +643,11 @@ const Sidebar = ({
         )}
 
         {selectedRepoInfo && (
-          <div className="mt-4 rounded-lg border border-border/80 bg-[#0f0f0f] p-3">
+          <div className={`mt-4 rounded-lg border p-3 ${theme === 'light' ? 'border-[#d8e0ea] bg-[#f8fafc]' : 'border-border/80 bg-[#0f0f0f]'}`}>
             <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-1">Active Repo</div>
             <button
               onClick={() => setPage('discover')}
-              className="w-full text-left text-sm font-medium text-foreground hover:text-white transition-colors truncate cursor-pointer"
+              className={`w-full text-left text-sm font-medium transition-colors truncate cursor-pointer ${theme === 'light' ? 'text-[#111827] hover:text-[#0f172a]' : 'text-foreground hover:text-white'}`}
               title={selectedRepoInfo.repo}
             >
               {selectedRepoInfo.repo}
@@ -611,7 +657,15 @@ const Sidebar = ({
       </nav>
 
       <div className="p-3 border-t border-border/80">
-        <div className="rounded-lg border border-border bg-[#0f0f0f] p-3">
+        <div className={`rounded-lg border p-3 ${theme === 'light' ? 'border-[#d8e0ea] bg-[#f8fafc]' : 'border-border bg-[#0f0f0f]'}`}>
+          <button
+            onClick={toggleTheme}
+            className={`w-full mb-2.5 flex items-center justify-center gap-2 px-2.5 py-2 rounded-md text-[12px] font-medium transition-all duration-150 border ${theme === 'light' ? 'text-[#4b5563] hover:text-[#111827] hover:bg-[#e9eef5] border-[#cdd6e3]' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03] border border-border/70'}`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            <ThemeIcon theme={theme} />
+            <span>{theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}</span>
+          </button>
           <div className="flex items-center gap-2.5 mb-2">
             <img src={user.avatar_url} alt={user.login} className="w-8 h-8 rounded-full ring-1 ring-border" />
             <div className="min-w-0">
@@ -621,7 +675,7 @@ const Sidebar = ({
           </div>
           <a
             href="/api/auth/logout"
-            className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.03] transition-all duration-150"
+            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-all duration-150 ${theme === 'light' ? 'text-[#4b5563] hover:text-[#111827] hover:bg-[#e9eef5]' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'}`}
           >
             <LogoutIcon />
             Sign out
@@ -636,6 +690,13 @@ const Sidebar = ({
 // ─── Main App ─────────────────────────────────────────────────────
 
 export default function App() {
+  const publicUsername = useMemo(() => {
+    const path = window.location.pathname || '/';
+    const match = path.match(/^\/u\/([A-Za-z0-9-]+)\/?$/);
+    return match ? decodeURIComponent(match[1]) : null;
+  }, []);
+
+  const [theme, setTheme] = useState<ThemeMode>('dark');
   const [user, setUser] = useState<any>(null);
   const [page, setPage] = useState('dashboard');
   const [loading, setLoading] = useState(true);
@@ -645,9 +706,36 @@ export default function App() {
   const [watchlistRefreshKey, setWatchlistRefreshKey] = useState(0);
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState('');
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   const [cursor, setCursor] = useState({ x: 40, y: 40 });
 
   useEffect(() => {
+    const savedTheme = localStorage.getItem('pr_radar_theme') as ThemeMode | null;
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      setTheme(savedTheme);
+      return;
+    }
+
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    setTheme(prefersLight ? 'light' : 'dark');
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('theme-light', theme === 'light');
+    localStorage.setItem('pr_radar_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((current) => current === 'dark' ? 'light' : 'dark');
+  };
+
+  useEffect(() => {
+    if (publicUsername) {
+      setLoading(false);
+      return;
+    }
+
     const fetchSession = async () => {
       try {
         const response = await fetch('/api/auth/session', { credentials: 'include' });
@@ -664,7 +752,7 @@ export default function App() {
       setLoading(false);
     };
     fetchSession();
-  }, []);
+  }, [publicUsername]);
 
   const handleExplore = (repo: string) => {
     setExploreRepo(repo);
@@ -699,6 +787,7 @@ export default function App() {
       { id: 'watchlist', label: 'Open Watchlist', hint: 'W', run: () => setPage('watchlist') },
       { id: 'my-prs', label: 'Open My PRs', hint: 'P', run: () => setPage('my-prs') },
       { id: 'my-issues', label: 'Open My Issues', hint: 'I', run: () => setPage('my-issues') },
+      { id: 'profile', label: 'Open Profile', hint: 'U', run: () => setPage('profile') },
       {
         id: 'clear-repo',
         label: 'Clear Active Repository',
@@ -759,6 +848,7 @@ export default function App() {
       if (key === 'w') setPage('watchlist');
       if (key === 'p') setPage('my-prs');
       if (key === 'i') setPage('my-issues');
+      if (key === 'u') setPage('profile');
       if (key === 'a' && analysisIssue) setPage('issue-analysis');
     };
 
@@ -776,17 +866,22 @@ export default function App() {
     );
   }
 
+  if (publicUsername) {
+    return <PublicScorecard username={publicUsername} />;
+  }
+
   if (!user) {
-    return <LandingPage />;
+    return <LandingPage theme={theme} toggleTheme={toggleTheme} />;
   }
 
   const pageComponent = () => {
     switch (page) {
       case 'discover': return <Discover initialRepo={exploreRepo} onAnalyze={handleAnalyze} selectedRepoInfo={selectedRepoInfo} onSelectRepo={handleSelectRepo} onTrackedRepo={handleRepoTracked} />;
       case 'watchlist': return <Watchlist onExplore={handleExplore} refreshKey={watchlistRefreshKey} />;
-      case 'my-prs': return <MyPRs onAnalyze={handleAnalyze} />;
+      case 'my-prs': return <MyPRs onAnalyze={handleAnalyze} theme={theme} />;
       case 'my-issues': return <MyIssues onAnalyze={handleAnalyze} />;
-      case 'issue-analysis': return analysisIssue ? <IssueAnalysis issue={analysisIssue} /> : <Dashboard user={user} />;
+      case 'profile': return <Profile user={user} theme={theme} />;
+      case 'issue-analysis': return analysisIssue ? <IssueAnalysis issue={analysisIssue} theme={theme} /> : <Dashboard user={user} />;
       default: return <Dashboard user={user} />;
     }
   };
@@ -800,6 +895,8 @@ export default function App() {
           setPage={setPage}
           analysisIssueTitle={analysisIssue?.title}
           selectedRepoInfo={selectedRepoInfo}
+          theme={theme}
+          toggleTheme={toggleTheme}
         />
       </div>
 
@@ -809,8 +906,99 @@ export default function App() {
           <span className="text-foreground"><RadarIcon /></span>
           <span className="text-sm font-semibold tracking-tight">Algomerge</span>
         </div>
-        <img src={user.avatar_url} alt={user.login} className="w-7 h-7 rounded-full" />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="w-7 h-7 rounded-md border border-border bg-[#121212] text-muted-foreground hover:text-foreground flex items-center justify-center"
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            <ThemeIcon theme={theme} />
+          </button>
+          <button onClick={() => setMobileProfileOpen(true)} className="cursor-pointer">
+            <img src={user.avatar_url} alt={user.login} className="w-7 h-7 rounded-full ring-1 ring-border" />
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Profile Drawer */}
+      <AnimatePresence>
+        {mobileProfileOpen && (
+          <motion.div
+            className="md:hidden fixed inset-0 z-[80] bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileProfileOpen(false)}
+          >
+            <motion.div
+              className={`absolute top-0 right-0 w-72 h-full border-l flex flex-col ${theme === 'light' ? 'bg-[#f8fafc] border-[#d4dde8]' : 'bg-[#0d0d0d] border-border'}`}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* User Info */}
+              <div className={`p-5 border-b ${theme === 'light' ? 'border-[#d4dde8]' : 'border-border'}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Account</span>
+                  <button
+                    onClick={() => setMobileProfileOpen(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors p-1"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <img src={user.avatar_url} alt={user.login} className="w-12 h-12 rounded-full ring-1 ring-border" />
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-foreground truncate">{user.login}</div>
+                    <div className="text-[11px] text-muted-foreground">Signed in via GitHub</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex-1 overflow-y-auto p-3 space-y-1">
+                <button
+                  onClick={() => { setPage('profile'); setMobileProfileOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${page === 'profile' ? 'text-foreground bg-white/[0.06]' : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.03]'}`}
+                >
+                  <ProfileIcon /> Profile & Sharing
+                </button>
+                <button
+                  onClick={toggleTheme}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.03] transition-colors"
+                >
+                  <ThemeIcon theme={theme} />
+                  {theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                </button>
+                <button
+                  onClick={() => { setCommandOpen(true); setMobileProfileOpen(false); }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-white/[0.03] transition-colors"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  Quick Actions
+                </button>
+              </div>
+
+              {/* Sign out */}
+              <div className={`p-4 border-t ${theme === 'light' ? 'border-[#d4dde8]' : 'border-border'}`}>
+                <a
+                  href="/api/auth/logout"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-danger/80 hover:text-danger hover:bg-danger/5 transition-colors w-full"
+                >
+                  <LogoutIcon /> Sign Out
+                </a>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main
         className="md:ml-64 flex-1 overflow-x-hidden overflow-y-auto w-full relative"
@@ -827,7 +1015,15 @@ export default function App() {
         />
 
         <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
-          <div className="mb-4 flex items-center justify-end">
+          <div className="mb-4 flex items-center justify-end gap-2">
+            <button
+              onClick={toggleTheme}
+              className="text-xs px-3 py-1.5 rounded-md border border-border bg-[#121212] text-muted-foreground hover:text-foreground hover:border-[#3a3a3a] transition-colors inline-flex items-center gap-1.5"
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              <ThemeIcon theme={theme} />
+              {theme === 'dark' ? 'Light' : 'Dark'} Mode
+            </button>
             <button
               onClick={() => setCommandOpen(true)}
               className="text-xs px-3 py-1.5 rounded-md border border-border bg-[#121212] text-muted-foreground hover:text-foreground hover:border-[#3a3a3a] transition-colors"

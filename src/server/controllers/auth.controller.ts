@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { getAccessToken, getUserProfile } from '../services/github.service.js';
 import { signToken, COOKIE_NAME, COOKIE_OPTIONS } from '../utils/auth.js';
+import { upsertUser } from '../models/user.model.js';
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const APP_URL = process.env.APP_URL;
@@ -19,6 +20,13 @@ export const githubCallback = async (req: Request, res: Response) => {
   try {
     const accessToken = await getAccessToken(code);
     const userProfile = await getUserProfile(accessToken);
+
+    // Persist / update user in Supabase
+    await upsertUser(
+      userProfile.id.toString(),
+      userProfile.login,
+      userProfile.avatar_url
+    );
 
     const token = signToken({
       userId: userProfile.id,

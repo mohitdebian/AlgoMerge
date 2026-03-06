@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { PRCard } from '../components/PRCard';
 import { apiFetch } from '../lib/api';
 
-export const MyPRs = ({ onAnalyze }: { onAnalyze?: (issue: any) => void }) => {
+export const MyPRs = ({ onAnalyze, theme = 'dark' }: { onAnalyze?: (issue: any) => void; theme?: 'dark' | 'light' }) => {
   const [prs, setPRs] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -122,7 +122,7 @@ export const MyPRs = ({ onAnalyze }: { onAnalyze?: (issue: any) => void }) => {
       ) : filteredPRs.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filteredPRs.map((pr, i) => (
-            <PRCard key={pr.id} pr={pr} index={i} onAnalyze={onAnalyze} />
+            <PRCard key={pr.id} pr={pr} index={i} onAnalyze={onAnalyze} theme={theme} />
           ))}
         </div>
       ) : (

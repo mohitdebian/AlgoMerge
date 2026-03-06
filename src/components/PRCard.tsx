@@ -22,7 +22,7 @@ const AnimatedBar = ({ value, colorClass }: { value: number; colorClass: string 
     );
 };
 
-export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) => void }> = ({ pr, index = 0, onAnalyze }) => {
+export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) => void; theme?: 'dark' | 'light' }> = ({ pr, index = 0, onAnalyze, theme = 'dark' }) => {
     const [expanded, setExpanded] = useState(false);
 
     const mergeProb = pr.mergeProbability || Math.floor(Math.random() * 40 + 40);
@@ -44,13 +44,14 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
     const isMerged = pr.pull_request && !!pr.pull_request.merged_at;
     const isClosed = pr.state === 'closed';
     const mergedTheme = isMerged;
+    const mergedLight = mergedTheme && theme === 'light';
 
     let stateLabel = 'Open';
     let stateDot = 'bg-warning';
 
     if (isMerged) {
         stateLabel = 'Merged';
-        stateDot = 'bg-[#a371f7]';
+        stateDot = mergedLight ? 'bg-[#7c3aed]' : 'bg-[#a371f7]';
     } else if (isClosed) {
         stateLabel = 'Closed';
         stateDot = 'bg-danger';
@@ -62,18 +63,18 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
 
     return (
         <motion.div
-            className={`v-card p-5 flex flex-col gap-4 relative overflow-hidden group ${mergedTheme ? 'bg-[#171022] border-[#5b3cc4]/45 shadow-[0_0_0_1px_rgba(163,113,247,0.08)]' : ''}`}
+            className={`v-card p-5 flex flex-col gap-4 relative overflow-hidden group ${mergedTheme ? (mergedLight ? 'bg-[#f7f2ff] border-[#c4b5fd]/80 shadow-[0_0_0_1px_rgba(124,58,237,0.14)]' : 'bg-[#171022] border-[#5b3cc4]/45 shadow-[0_0_0_1px_rgba(163,113,247,0.08)]') : ''}`}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}
-            whileHover={{ y: -2, borderColor: mergedTheme ? 'rgba(163,113,247,0.5)' : 'rgba(255,255,255,0.08)' }}
+            whileHover={{ y: -2, borderColor: mergedTheme ? (mergedLight ? 'rgba(124,58,237,0.38)' : 'rgba(163,113,247,0.5)') : 'rgba(255,255,255,0.08)' }}
         >
             <div className="absolute left-3 right-3 top-3 z-20 pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                <div className={`rounded-md border px-2.5 py-2 backdrop-blur ${mergedTheme ? 'border-[#5b3cc4]/40 bg-[#1a1228]/95' : 'border-border/80 bg-[#0f0f0f]/95'}`}>
+                <div className={`rounded-md border px-2.5 py-2 backdrop-blur ${mergedTheme ? (mergedLight ? 'border-[#c4b5fd] bg-[#f1e8ff]/95' : 'border-[#5b3cc4]/40 bg-[#1a1228]/95') : 'border-border/80 bg-[#0f0f0f]/95'}`}>
                     <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground mb-1">Hover Preview</div>
                     <div className="flex items-center justify-between text-[11px]">
                         <span className="text-muted-foreground truncate pr-2">{repoName}</span>
-                        <span className={`font-medium ${mergedTheme ? 'text-[#d6bcfa]' : 'text-foreground'}`}>{stateLabel}</span>
+                        <span className={`font-medium ${mergedTheme ? (mergedLight ? 'text-[#5b21b6]' : 'text-[#d6bcfa]') : 'text-foreground'}`}>{stateLabel}</span>
                     </div>
                     <div className="mt-1 flex items-center justify-between text-[10px]">
                         <span className="text-muted-foreground">Comments: {pr.comments || 0}</span>
@@ -87,7 +88,7 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
                     href={pr.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`font-medium text-[13px] leading-snug transition-colors line-clamp-2 flex-1 ${mergedTheme ? 'text-[#d6bcfa] hover:text-white' : 'hover:text-foreground text-muted-foreground'}`}
+                    className={`font-medium text-[13px] leading-snug transition-colors line-clamp-2 flex-1 ${mergedTheme ? (mergedLight ? 'text-[#5b21b6] hover:text-[#4c1d95]' : 'text-[#d6bcfa] hover:text-white') : 'hover:text-foreground text-muted-foreground'}`}
                 >
                     {pr.title}
                 </a>
@@ -105,26 +106,26 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
                 <div className="flex items-center justify-between">
                     <span className="text-[11px] text-muted-foreground">Merge probability</span>
                     <div className="flex items-center gap-2">
-                        <span className={`text-xs font-bold font-mono ${mergedTheme ? 'text-[#a371f7]' : colors.text}`}>{mergeProb}%</span>
+                        <span className={`text-xs font-bold font-mono ${mergedTheme ? (mergedLight ? 'text-[#7c3aed]' : 'text-[#a371f7]') : colors.text}`}>{mergeProb}%</span>
                         <span className="text-[10px] text-muted-foreground/60">{confidenceScore}/100</span>
                     </div>
                 </div>
-                <div className={`h-1 rounded-full overflow-hidden ${mergedTheme ? 'bg-[#261a3b]' : 'bg-[#1a1a1a]'}`}>
-                    <AnimatedBar value={mergeProb} colorClass={mergedTheme ? 'bg-[#a371f7]' : colors.bar} />
+                <div className={`h-1 rounded-full overflow-hidden ${mergedTheme ? (mergedLight ? 'bg-[#ddd6fe]' : 'bg-[#261a3b]') : 'bg-[#1a1a1a]'}`}>
+                    <AnimatedBar value={mergeProb} colorClass={mergedTheme ? (mergedLight ? 'bg-[#7c3aed]' : 'bg-[#a371f7]') : colors.bar} />
                 </div>
             </div>
 
             {/* Metrics */}
-            <div className={`grid grid-cols-3 gap-px rounded-lg overflow-hidden ${mergedTheme ? 'bg-[#402a66]' : 'bg-border'}`}>
-                <div className={`px-3 py-2 ${mergedTheme ? 'bg-[#1d1530]' : 'bg-card'}`}>
+            <div className={`grid grid-cols-3 gap-px rounded-lg overflow-hidden ${mergedTheme ? (mergedLight ? 'bg-[#c4b5fd]' : 'bg-[#402a66]') : 'bg-border'}`}>
+                <div className={`px-3 py-2 ${mergedTheme ? (mergedLight ? 'bg-[#f5f3ff]' : 'bg-[#1d1530]') : 'bg-card'}`}>
                     <div className="text-[10px] text-muted-foreground mb-0.5">Response</div>
                     <div className="text-xs font-medium font-mono">{responseTime}</div>
                 </div>
-                <div className={`px-3 py-2 ${mergedTheme ? 'bg-[#1d1530]' : 'bg-card'}`}>
+                <div className={`px-3 py-2 ${mergedTheme ? (mergedLight ? 'bg-[#f5f3ff]' : 'bg-[#1d1530]') : 'bg-card'}`}>
                     <div className="text-[10px] text-muted-foreground mb-0.5">Similar</div>
-                    <div className={`text-xs font-medium font-mono ${mergedTheme ? 'text-[#c4b5fd]' : 'text-success'}`}>{similarSuccess}</div>
+                    <div className={`text-xs font-medium font-mono ${mergedTheme ? (mergedLight ? 'text-[#6d28d9]' : 'text-[#c4b5fd]') : 'text-success'}`}>{similarSuccess}</div>
                 </div>
-                <div className={`px-3 py-2 ${mergedTheme ? 'bg-[#1d1530]' : 'bg-card'}`}>
+                <div className={`px-3 py-2 ${mergedTheme ? (mergedLight ? 'bg-[#f5f3ff]' : 'bg-[#1d1530]') : 'bg-card'}`}>
                     <div className="text-[10px] text-muted-foreground mb-0.5">Idle</div>
                     <div className="text-xs font-medium font-mono">{activeAge}d</div>
                 </div>
@@ -133,7 +134,7 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
             {/* Expandable */}
             <button
                 onClick={() => setExpanded(!expanded)}
-                className={`w-full flex items-center justify-between text-[11px] transition-colors pt-2 border-t ${mergedTheme ? 'text-[#b8a6dd] hover:text-white border-[#4b3572]' : 'text-muted-foreground hover:text-foreground border-border'}`}
+                className={`w-full flex items-center justify-between text-[11px] transition-colors pt-2 border-t ${mergedTheme ? (mergedLight ? 'text-[#6d28d9] hover:text-[#5b21b6] border-[#c4b5fd]' : 'text-[#b8a6dd] hover:text-white border-[#4b3572]') : 'text-muted-foreground hover:text-foreground border-border'}`}
             >
                 <span>Details</span>
                 <svg
@@ -187,7 +188,9 @@ export const PRCard: React.FC<{ pr: any; index?: number; onAnalyze?: (pr: any) =
                     className={`text-[11px] font-semibold transition-all px-2.5 py-1 rounded-md border ${isClosed || !onAnalyze
                         ? 'text-muted-foreground/40 border-border/50 bg-[#101010] cursor-not-allowed'
                         : mergedTheme
-                            ? 'text-[#f2e9ff] border-[#6a4ccf] bg-[#2b1e42] hover:bg-[#35224f] shadow-[0_0_0_1px_rgba(163,113,247,0.2)] cursor-pointer'
+                            ? (mergedLight
+                                ? 'text-[#5b21b6] border-[#c4b5fd] bg-[#f5f3ff] hover:bg-[#ede9fe] shadow-[0_0_0_1px_rgba(124,58,237,0.12)] cursor-pointer'
+                                : 'text-[#f2e9ff] border-[#6a4ccf] bg-[#2b1e42] hover:bg-[#35224f] shadow-[0_0_0_1px_rgba(163,113,247,0.2)] cursor-pointer')
                             : 'text-foreground border-[#3a3a3a] bg-[#191919] hover:bg-[#222] hover:border-[#4a4a4a] shadow-[0_0_0_1px_rgba(255,255,255,0.03)] cursor-pointer'
                         }`}
                 >
