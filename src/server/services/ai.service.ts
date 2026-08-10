@@ -1,13 +1,29 @@
 import { GoogleGenAI } from '@google/genai';
+import { AiAnalysis } from '../models/aiAnalysis.model.js';
+import mongoose from 'mongoose';
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
     console.warn('GEMINI_API_KEY environment variable is missing.');
 }
 
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const generateIssueAnalysis = async (title: string, body: string, owner: string, repo: string, isPR: boolean = false): Promise<string> => {
+    // 1. Check MongoDB Cache first
+    if (mongoose.connection.readyState === 1) { // Connected
+        try {
+            const cachedAnalysis = await AiAnalysis.findOne({ owner, repo, issueTitle: title, isPR });
+            if (cachedAnalysis) {
+                console.log(`Cache hit for ${owner}/${repo} - ${title}`);
+                return cachedAnalysis.analysis;
+            }
+        } catch (error) {
+            console.error('Error reading from MongoDB cache:', error);
+            // Continue to generate with Gemini if cache read fails
+        }
+    }
+
     if (!apiKey) {
         throw new Error('AI analysis is disabled because GEMINI_API_KEY is not configured.');
     }
@@ -52,12 +68,30 @@ ${body || 'No description provided.'}
     const prompt = isPR ? prPrompt : issuePrompt;
 
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+        const response = await ai!.models.generateContent({
+            model: 'gemini-flash-latest',
             contents: prompt,
         });
 
-        return response.text || 'Unable to generate analysis at this time.';
+        const analysisText = response.text || 'Unable to generate analysis at this time.';
+
+        // 2. Save to MongoDB Cache
+        if (mongoose.connection.readyState === 1 && response.text) {
+            try {
+                await AiAnalysis.create({
+                    owner,
+                    repo,
+                    issueTitle: title,
+                    analysis: analysisText,
+                    isPR
+                });
+                console.log(`Saved analysis to MongoDB cache for ${owner}/${repo} - ${title}`);
+            } catch (error) {
+                console.error('Error saving to MongoDB cache:', error);
+            }
+        }
+
+        return analysisText;
     } catch (error) {
         console.error('Gemini API Error:', error);
         throw new Error('Failed to generate AI analysis.');
