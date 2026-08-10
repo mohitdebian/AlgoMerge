@@ -69,7 +69,7 @@ ${body || 'No description provided.'}
 
     try {
         const response = await ai!.models.generateContent({
-            model: 'gemini-flash-latest',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
@@ -92,8 +92,8 @@ ${body || 'No description provided.'}
         }
 
         return analysisText;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Gemini API Error:', error);
-        throw new Error('Failed to generate AI analysis.');
+        throw new Error(`Failed to generate AI analysis: ${error.message || 'Unknown error'}`);
     }
 };
