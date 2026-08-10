@@ -61,30 +61,39 @@ AlgoMerge surfaces high-probability contribution opportunities by analyzing:
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | React / Next.js |
-| Backend | Node.js |
-| Data | GitHub API |
-| Deployment | Vercel |
+| Frontend | React 18, Vite, Tailwind CSS |
+| Backend | Node.js, Express.js (Vercel Serverless) |
+| Relational Database | PostgreSQL (Supabase) - *User & Watchlist Data* |
+| NoSQL Database | MongoDB (Mongoose) - *AI Caching Layer* |
+| External APIs | GitHub REST API, Google Gemini API |
 
 ---
 
 ## Getting Started
 
+### 1. Clone the repository
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/algomerge.git
-
-# Navigate into the project
 cd algomerge
+```
 
-# Install dependencies
+### 2. Install dependencies
+```bash
 npm install
+```
 
-# Set up environment variables
+### 3. Set up environment variables
+Copy the example environment file and fill in your specific keys:
+```bash
 cp .env.example .env
-# Add your GitHub API token to .env
+```
 
-# Run the development server
+### 4. Database Setup
+1. **Supabase (PostgreSQL):** Run the SQL commands found in `supabase_migration.sql` inside your Supabase SQL Editor to set up the relational tables (`users` and `tracked_repositories`).
+2. **MongoDB:** Create a free MongoDB Atlas cluster and copy your connection string.
+
+### 5. Run the development server
+```bash
 npm run dev
 ```
 
@@ -94,8 +103,29 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 ## Environment Variables
 
+Your `.env` file must include the following keys to run AlgoMerge locally or in production:
+
 ```env
-GITHUB_API_TOKEN=your_github_token_here
+# -----------------------------------------------------------------------------
+# GitHub Configuration
+# -----------------------------------------------------------------------------
+GITHUB_PUBLIC_TOKEN="ghp_your_github_token"
+
+# -----------------------------------------------------------------------------
+# Database Configuration
+# -----------------------------------------------------------------------------
+# Supabase (PostgreSQL)
+VITE_SUPABASE_URL="https://your-project-id.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-anon-key"
+
+# MongoDB (NoSQL Caching)
+MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/algomerge"
+
+# -----------------------------------------------------------------------------
+# AI Configuration
+# -----------------------------------------------------------------------------
+# Google Gemini API Key
+GEMINI_API_KEY="AIzaSy_your_gemini_api_key"
 ```
 
 ---
