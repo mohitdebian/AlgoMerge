@@ -1,26 +1,45 @@
 # Product Requirements Document (PRD)
 
 ## 1. Product Overview
-**AlgoMerge** is an intelligent developer tool designed to help open-source contributors and maintainers assess GitHub pull requests and issues. By leveraging AI, AlgoMerge analyzes issues, predicts merge probabilities based on maintainer activity, and provides developers with actionable implementation plans before they write a single line of code.
+**AlgoMerge** is an intelligent open-source developer copilot designed to help engineers discover, triage, and implement GitHub issues and pull requests. By synthesizing real-time GitHub repository data with Google's Gemini LLM, AlgoMerge predicts PR merge likelihood, analyzes contribution complexity, and generates structured implementation blueprints before code is written.
 
-## 2. Target Audience
-*   **Open-Source Contributors:** Developers looking to find beginner-friendly issues or seeking guidance on how to tackle complex bugs.
-*   **Repository Maintainers:** Project owners who want to automate issue triaging and provide AI-generated context to potential contributors.
+---
 
-## 3. Key Features
-1.  **Repository Tracking (Watchlist):** Users can securely authenticate and maintain a list of tracked repositories.
-2.  **Issue & PR Discovery:** Fetches live, unfiltered issues and pull requests from GitHub via the GitHub REST API.
-3.  **Merge Probability Scoring:** Uses a custom algorithm to calculate the likelihood of a PR being merged based on repository competition and maintainer activity.
-4.  **AI Issue Analysis:** Integrates Google's Gemini LLM to generate structured, step-by-step implementation plans for any given issue.
-5.  **Dual-Database Caching Layer:** Employs a robust caching strategy to minimize API rate limits, utilizing MongoDB for unstructured AI responses and PostgreSQL for relational user data.
+## 2. Target Persona & Stakeholders
+*   **Open-Source Contributors:** Developers seeking beginner-friendly issues (`good first issue`, `help wanted`) or seeking architectural guidance on solving complex bugs.
+*   **Repository Maintainers:** Project owners seeking to automate issue triaging and reduce repetitive review cycles.
+*   **Technical Evaluators & Hiring Managers:** Assessors evaluating adherence to modern web engineering, security, distributed system patterns, and full-stack software architecture.
 
-## 4. User Stories
-*   *As a contributor, I want to authenticate via GitHub so that I can manage my personal watchlist of repositories.*
-*   *As a user, I want to view a list of trending GitHub repositories so I can discover new projects to contribute to.*
-*   *As a contributor, I want to click on an issue and receive an AI-generated implementation plan so I understand how to approach the code changes.*
-*   *As a maintainer, I want the system to cache AI analyses so that multiple users querying the same issue do not exhaust the LLM API rate limits.*
+---
 
-## 5. Non-Functional Requirements
-*   **Performance:** AI analysis caching must return results in under 500ms for previously analyzed issues.
-*   **Security:** API keys for GitHub and Gemini must be secured on the server-side, and user endpoints must be protected via JWT authentication.
-*   **Scalability:** The backend must be stateless (Serverless deployment ready) to scale dynamically with user load.
+## 3. Core Functional Requirements (FR)
+
+### 3.1 Authentication & User Session Management
+*   **FR-1.1:** System MUST support 3rd-party OAuth login via GitHub (`/api/auth/github`).
+*   **FR-1.2:** System MUST issue signed JSON Web Tokens (JWT) stored in secure `httpOnly` cookies upon successful authentication.
+*   **FR-1.3:** System MUST provide stateless session introspection (`/api/auth/session`) and graceful logout mechanisms (`/api/auth/logout`).
+
+### 3.2 Repository & Issue Discovery Engine
+*   **FR-2.1:** System MUST fetch live issues and PRs for any public GitHub repository via REST API (`/api/issues/:owner/:repo`).
+*   **FR-2.2:** System MUST calculate and render heuristic merge probabilities and complexity scores on issue cards.
+*   **FR-2.3:** System MUST allow users to filter issues by labels (e.g., `good first issue`, `help wanted`, `bug`, `enhancement`).
+*   **FR-2.4:** System MUST provide trending repository recommendations with responsive skeleton loading indicators.
+
+### 3.3 AI Implementation Blueprint Generator
+*   **FR-3.1:** System MUST integrate Google Gemini LLM to generate contextual, step-by-step markdown plans for open issues (`/api/issues/analyze`).
+*   **FR-3.2:** System MUST enforce prompt engineering constraints with structured output formatting.
+*   **FR-3.3:** System MUST implement a dual-persistence caching mechanism using MongoDB to prevent redundant token consumption and avoid LLM API rate limits.
+
+### 3.4 User Watchlist & Repository Tracking
+*   **FR-4.1:** Authenticated users MUST be able to track and untrack repositories in their personal watchlist (`/api/watchlist`).
+*   **FR-4.2:** Watchlist persistence MUST utilize PostgreSQL relational schemas with foreign key cascading constraints and compound uniqueness.
+
+---
+
+## 4. Non-Functional Requirements (NFR)
+
+*   **Security & Data Privacy:** No secrets or API credentials exposed to client bundles. All external API tokens (`GEMINI_API_KEY`, `GITHUB_CLIENT_SECRET`) managed strictly via server-side environment variables.
+*   **Performance & Latency:** Cached AI analysis queries MUST respond in $< 100\text{ms}$. Uncached Gemini requests streamed or returned within $< 3\text{s}$.
+*   **Robust Error Handling:** All asynchronous endpoints MUST use structured `try...catch` blocks returning appropriate HTTP status codes (`400`, `401`, `403`, `404`, `429`, `500`) without exposing raw database stack traces.
+*   **Resilience & Scalability:** Serverless architecture deployed on Vercel ensuring automatic horizontal scaling.
+*   **UI/UX Responsiveness:** Fluid multi-device experience across mobile, tablet, and desktop viewports using Tailwind CSS utility grids and flex layouts.
