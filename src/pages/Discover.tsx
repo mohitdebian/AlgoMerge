@@ -27,6 +27,7 @@ export const Discover = ({
   const [isTracking, setIsTracking] = useState(false);
   const [trackFeedback, setTrackFeedback] = useState<string>('');
   const [presetName, setPresetName] = useState('');
+  const [formErrors, setFormErrors] = useState<{ repo?: string; preset?: string }>({});
   const [presets, setPresets] = useState<Array<{ id: string; name: string; repo: string; filter: string }>>([]);
 
   useEffect(() => {
@@ -122,6 +123,19 @@ export const Discover = ({
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
+
+    // Client-side Form Validation
+    const trimmedRepo = repo.trim();
+    if (!trimmedRepo) {
+      setFormErrors((prev) => ({ ...prev, repo: 'Repository name cannot be empty' }));
+      return;
+    }
+    if (!trimmedRepo.includes('/') || trimmedRepo.split('/').length !== 2 || !trimmedRepo.split('/')[0] || !trimmedRepo.split('/')[1]) {
+      setFormErrors((prev) => ({ ...prev, repo: 'Must be in format owner/repository (e.g. facebook/react)' }));
+      return;
+    }
+
     if (repo.includes('/')) {
       if (onSelectRepo && (!selectedRepoInfo || selectedRepoInfo.repo !== repo || selectedRepoInfo.stars === undefined)) {
         await fetchRepoInfo(repo);
@@ -277,11 +291,17 @@ export const Discover = ({
             <input
               type="text"
               value={repo}
-              onChange={(e) => setRepo(e.target.value)}
-              className="w-full bg-[#0f0f0f] border border-border rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-[#3a3a3a] transition-colors placeholder:text-muted-foreground/40"
+              onChange={(e) => {
+                setRepo(e.target.value);
+                if (formErrors.repo) setFormErrors((prev) => ({ ...prev, repo: undefined }));
+              }}
+              className={`w-full bg-[#0f0f0f] border ${formErrors.repo ? 'border-danger focus:border-danger' : 'border-border focus:border-[#3a3a3a]'} rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none transition-colors placeholder:text-muted-foreground/40`}
               placeholder="owner/repository (e.g. vercel/next.js)"
             />
           </div>
+          {formErrors.repo && (
+            <p className="text-xs text-danger mt-1 md:hidden">{formErrors.repo}</p>
+          )}
           <button
             type="submit"
             disabled={loading}

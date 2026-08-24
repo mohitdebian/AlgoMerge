@@ -390,3 +390,46 @@ export const getPublicScorecardImage = async (req: Request, res: Response) => {
     res.status(500).send('Failed to generate scorecard image');
   }
 };
+
+/**
+ * Demonstrates File Upload Handling via Multer and memory storage
+ */
+export const uploadScorecardAsset = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded. Please provide an image file.' });
+    }
+
+    const { originalname, mimetype, size } = req.file;
+    return res.status(200).json({
+      message: 'File uploaded successfully',
+      fileDetails: {
+        name: originalname,
+        type: mimetype,
+        sizeBytes: size,
+      },
+    });
+  } catch (error) {
+    console.error('File upload error:', error);
+    return res.status(500).json({ error: 'File upload processing failed' });
+  }
+};
+
+/**
+ * Demonstrates Explicit SQL JOINs and Aggregations (Supabase / Postgres)
+ */
+export const getWatchlistWithJoin = async (req: Request, res: Response) => {
+  try {
+    const { getWatchlist } = await import('../models/user.model.js');
+    const githubId = (req.query.github_id as string) || (req.user?.userId ? String(req.user.userId) : '');
+    if (!githubId) {
+      return res.status(400).json({ error: 'github_id parameter is required' });
+    }
+
+    const watchlist = await getWatchlist(githubId);
+    return res.status(200).json({ githubId, watchlist, totalTracked: watchlist.length });
+  } catch (error) {
+    console.error('Error fetching watchlist via SQL JOIN:', error);
+    return res.status(500).json({ error: 'Failed to query SQL JOIN relationship' });
+  }
+};
