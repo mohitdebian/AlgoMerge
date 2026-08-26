@@ -53,7 +53,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 };
 
 /**
- * Demonstrates Password Hashing with bcryptjs and Request Body Validation with Zod
+ * Demonstrates Input Sanitization & Injection Awareness, Password Hashing with bcryptjs, and Request Body Validation with Zod
  */
 export const registerWithPassword = async (req: Request, res: Response) => {
   try {
@@ -67,14 +67,29 @@ export const registerWithPassword = async (req: Request, res: Response) => {
 
     const { username, password, email } = validationResult.data;
 
+    // Input sanitization & injection awareness defense: Strip HTML tags and escape SQL/NoSQL injection characters
+    const sanitize = (str: string): string => {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;')
+        .replace(/\$/g, '&#x24;'); // defense against Mongo query selector injection ($gt, etc.)
+    };
+
+    const sanitizedUsername = sanitize(username);
+    const sanitizedEmail = email ? sanitize(email) : undefined;
+
     // Salt and hash password using bcrypt
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Persist simulated hashed user
+    // Persist simulated hashed user with sanitized data
     const simulatedUserId = `local_${Date.now()}`;
-    await upsertUser(simulatedUserId, username, 'https://github.com/ghost.png');
+    await upsertUser(simulatedUserId, sanitizedUsername, 'https://github.com/ghost.png');
 
     const token = signToken({
       userId: simulatedUserId,
