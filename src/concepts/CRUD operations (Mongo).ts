@@ -1,9 +1,23 @@
 // CRUD operations (Mongo)
 import mongoose from 'mongoose';
-const Model = mongoose.model('Test', new mongoose.Schema({ name: String }));
-async function crud() {
-  await Model.create({ name: 'a' }); // Create
-  await Model.find({}); // Read
-  await Model.updateOne({}, { name: 'b' }); // Update
-  await Model.deleteOne({}); // Delete
+
+const AiAnalysis = mongoose.model('AiAnalysis', new mongoose.Schema({ 
+  repo: String, 
+  analysis: String,
+  status: String 
+}));
+
+export async function crudOps() {
+  // CREATE
+  await AiAnalysis.create({ repo: "a", analysis: "b", status: "c" });
+
+  // READ
+  await AiAnalysis.find({ repo: "a" });
+  await AiAnalysis.findOne({ repo: "a" });
+
+  // UPDATE
+  await AiAnalysis.updateOne({ repo: "a" }, { status: "d" });
+
+  // DELETE
+  await AiAnalysis.deleteOne({ repo: "a" });
 }
