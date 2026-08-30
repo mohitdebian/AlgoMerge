@@ -33,3 +33,19 @@ CREATE TABLE addresses_3nf (
     zip_code VARCHAR(10) REFERENCES locations(zip_code)
 );
 
+-- ORM usage (Prisma/Sequelize) equivalent of above schema:
+-- Prisma schema:
+-- model User {
+--   id    Int    @id @default(autoincrement())
+--   name  String
+--   posts Post[]
+-- }
+-- model Post {
+--   id     Int  @id @default(autoincrement())
+--   userId Int
+--   user   User @relation(fields: [userId], references: [id])
+-- }
+-- Sequelize equivalent:
+-- const User = sequelize.define('User', { name: DataTypes.STRING });
+-- const Post = sequelize.define('Post', { title: DataTypes.STRING });
+-- User.hasMany(Post); Post.belongsTo(User);
