@@ -148,6 +148,35 @@ Contributions are welcome. If you find a bug or have a feature request, feel fre
 
 ---
 
+## Keep Supabase Warm with UptimeRobot
+
+AlgoMerge now exposes a health endpoint at:
+
+- `GET /api/health`
+
+This endpoint performs a lightweight Supabase query and returns:
+
+- `200` with `{ status: "ok", database: "connected" }` when healthy
+- `503` with `{ status: "degraded", database: "unavailable" }` when Supabase is unreachable
+
+### UptimeRobot Setup
+
+1. Deploy the app so `/api/health` is publicly reachable from your production domain.
+2. In UptimeRobot, create a new **HTTP(s)** monitor for:
+   - `https://<your-domain>/api/health`
+3. Set the monitor interval to **5 minutes** (or the minimum available on your plan).
+4. Enable response validation:
+   - HTTP status check for `200`
+   - Optional keyword check for `"status":"ok"`
+5. Verify activity in:
+   - UptimeRobot check history
+   - deployment/app logs
+   - Supabase logs/activity
+
+> Note: Pinging reduces cold starts, but Supabase free-tier suspension behavior is still controlled by Supabase platform limits.
+
+---
+
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
@@ -155,5 +184,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">Built by <strong>Mohit</strong> · Feedback and contributions welcome</p>
-
 
