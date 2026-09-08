@@ -1,0 +1,25 @@
+name: Ping AlgoMerge to stay awake
+on:
+  schedule:
+    - cron: '*/5 * * * *' # every 5 minutes
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl AlgoMerge homepage (keep Supabase awake)
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://algomerge.vercel.app/"
+          echo "Pinging $URL"
+          # follow redirects (-L) and get final HTTP code
+          HTTP_STATUS=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 -L "$URL") || HTTP_STATUS="000"
+          echo "HTTP status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "301" ] || [ "$HTTP_STATUS" = "302" ]; then
+            echo "Ping OK"
+          else
+            echo "Unexpected HTTP status: $HTTP_STATUS" >&2
+            exit 1
+          fi
