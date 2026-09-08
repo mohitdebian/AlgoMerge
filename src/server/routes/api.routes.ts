@@ -10,6 +10,7 @@ import {
   uploadScorecardAsset,
   getWatchlistWithJoin
 } from '../controllers/api.controller.js';
+import { getHealth } from '../controllers/health.controller.js';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -26,5 +27,6 @@ router.get('/public/:username', getPublicScorecard);
 router.get('/public/:username/share-card.svg', getPublicScorecardImage);
 router.post('/upload/asset', upload.single('file'), uploadScorecardAsset);
 router.get('/watchlist-join', getWatchlistWithJoin);
+router.get('/health', getHealth);
 
 export default router;
